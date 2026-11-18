@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Agende sua consulta</title>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+html{scroll-behavior:smooth}
+.top2{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top));backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg) 80%,transparent)}
+.logo{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:18px}
+.top2 .btn{text-decoration:none}
+.h{position:relative;overflow:hidden;padding:56px 16px 64px;background:radial-gradient(900px 400px at 15% 0%,color-mix(in srgb,var(--ac) 38%,transparent),transparent),radial-gradient(700px 360px at 90% 30%,color-mix(in srgb,var(--ok) 30%,transparent),transparent)}
+.hin{position:relative;max-width:880px;margin:0 auto}
+.h h1{font-size:clamp(34px,8vw,64px);max-width:12em;letter-spacing:-.01em}
+.pill{display:inline-block;padding:6px 14px;border-radius:999px;background:var(--s);border:1px solid var(--line);font-size:14px;margin:0 0 18px}
+.lead{font-size:clamp(17px,2.6vw,20px);color:var(--mut);max-width:32em;margin:18px 0 0}
+.btn.big{display:inline-block;margin-top:26px;padding:16px 28px;font-size:17px;border-radius:14px;text-decoration:none;box-shadow:0 10px 30px color-mix(in srgb,var(--ac) 45%,transparent)}
+.pts{list-style:none;display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:26px 0 0}
+.pts li{padding:7px 14px;border-radius:999px;background:color-mix(in srgb,var(--s) 80%,transparent);border:1px solid var(--line);font-size:14px}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;animation:fl 14s ease-in-out infinite alternate}
+.b1{width:280px;height:280px;right:-60px;top:-40px;background:var(--ac)}
+.b2{width:220px;height:220px;left:40%;bottom:-80px;background:var(--ok);animation-delay:-6s}
+@keyframes fl{to{transform:translate(-30px,30px) scale(1.15)}}
+@media(prefers-reduced-motion:reduce){.blob{animation:none}html{scroll-behavior:auto}}
+.steps{padding-top:40px}
+.steps ol{list-style:none;padding:0;margin:16px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.steps li{background:var(--s);border:1px solid var(--line);border-radius:16px;padding:18px}
+.steps b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--ac);color:var(--acink);margin-bottom:10px}
+.steps p{margin:0;color:var(--mut);font-size:15px}
+.book{border-top:4px solid var(--ac);box-shadow:0 20px 50px color-mix(in srgb,var(--ac) 18%,transparent)}
+.chip[aria-pressed=true]{background:var(--ac);color:var(--acink);border-color:var(--ac)}
+.foot{text-align:center;color:var(--mut);font-size:14px;padding:8px 16px 32px}
+@media(max-width:640px){.steps ol{grid-template-columns:1fr}}
+.cal-h{display:flex;align-items:center;gap:8px;margin-top:14px}
+.cal-h select{flex:1;min-width:0;text-transform:capitalize}
+.nav{flex:none;width:42px;height:42px;border:1px solid var(--line);background:none;border-radius:10px;font-size:20px}
+.nav:disabled{opacity:.35;cursor:not-allowed}
+.grade{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
+.sem{text-align:center;font-size:12px;color:var(--mut);padding-bottom:2px}
+.d{aspect-ratio:1;min-height:40px;border:1px solid transparent;background:none;border-radius:12px;font-weight:600}
+.d:not(:disabled):hover{background:var(--soft)}
+.d:disabled{opacity:.3;cursor:not-allowed}
+.d.hoje{border-color:var(--ac)}
+.d[aria-pressed=true]{background:var(--ac);color:var(--acink);border-color:var(--ac)}
+.vaga{display:block;margin-top:14px;border:1.5px solid var(--ac);background:color-mix(in srgb,var(--s) 75%,transparent);border-radius:999px;padding:10px 18px;font-weight:600;text-align:left}
+.resp{text-align:center}
+.orb{width:170px;height:170px;margin:20px auto 6px;border:0;border-radius:50%;display:grid;place-items:center;font:400 20px "Young Serif",Georgia,serif;color:var(--acink);background:radial-gradient(circle at 35% 30%,var(--ok),var(--ac));box-shadow:0 14px 40px color-mix(in srgb,var(--ac) 40%,transparent);transition:transform 4s ease-in-out}
+.orb.in{transform:scale(1.35)}.orb.out{transform:scale(.85)}
+@media(prefers-reduced-motion:reduce){.orb{transition:none}}
+details{border-top:1px solid var(--line);padding:12px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600}
+details p{margin:8px 0 0;color:var(--mut)}
+.wa{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:6;background:#1FA855;color:#fff;border-radius:999px;padding:13px 20px;font-weight:600;text-decoration:none;box-shadow:0 10px 28px rgba(0,0,0,.3)}
+.hgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:36px;align-items:center}
+.ph{justify-self:center;width:min(320px,80%)}
+.ph img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:999px 999px 28px 28px;box-shadow:0 20px 50px color-mix(in srgb,var(--ac) 25%,transparent)}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.tri h3{font-family:"Young Serif",Georgia,serif;font-weight:400;color:var(--ac);margin:0 0 4px;font-size:20px}
+.tri p{margin:0;color:var(--mut);font-size:15px}
+@media(max-width:760px){.hgrid{grid-template-columns:1fr}.ph{order:-1;width:min(230px,70%);justify-self:start}.tri{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header class="top2"><span class="logo" id="logo">Agende sua consulta</span><a class="btn s" href="#agendar">Agendar</a></header>
+<section class="h"><div class="blob b1"></div><div class="blob b2"></div>
+<div class="hin hgrid"><div><p class="pill">Nota 5,0 no Google, em 18 avaliações</p>
+<h1>Cuidar da sua saúde mental é um ato de coragem e amor-próprio</h1>
+<p class="lead">Larissa Amigo, psicóloga clínica especialista em Terapia Cognitivo-Comportamental. Escolha seu horário em menos de um minuto.</p>
+<a class="btn big" href="#agendar">Agendar minha primeira conversa</a>
+<button class="vaga" id="vaga" hidden></button>
+<ul class="pts"><li>Sigilo profissional</li><li>Sessões de 50 minutos</li><li>Confirmação pelo WhatsApp</li></ul>
+<p class="mut" id="quem"></p></div>
+<div class="ph"><img src="foto-larissa.jpg" alt="Larissa Amigo, psicóloga clínica"></div></div></section>
+<section class="wrap steps"><h2>Como funciona</h2>
+<ol><li><b>1</b><h3 style="margin:0 0 4px">Escolha o horário</h3><p>Veja os dias livres e reserve o que combina com você.</p></li>
+<li><b>2</b><h3 style="margin:0 0 4px">Receba a confirmação</h3><p>Eu confirmo com você pelo WhatsApp.</p></li>
+<li><b>3</b><h3 style="margin:0 0 4px">Faça a sessão</h3><p>No consultório ou online, com o link enviado antes.</p></li></ol></section>
+<section class="wrap" id="sobre"><div class="card"><h2>Um espaço para ser ouvida</h2>
+<p class="mut">Na terapia, você traz o que pesa e, juntas, encontramos caminhos práticos para lidar com isso no dia a dia. Sou fundadora da Psicologia Delas, simpósio de saúde mental feminina que reúne mulheres e profissionais para conversar com franqueza sobre o que quase ninguém fala.</p>
+<h2 style="margin-top:22px">Como a TCC funciona</h2>
+<p class="mut">A Terapia Cognitivo-Comportamental parte de uma ideia simples: o que você pensa muda o que sente e o que faz.</p>
+<div class="tri"><div><h3>Pensamentos</h3><p>Identificamos as ideias automáticas dos momentos difíceis e testamos se são mesmo verdadeiras.</p></div>
+<div><h3>Emoções</h3><p>Você aprende a reconhecer e nomear o que sente e a lidar com a intensidade.</p></div>
+<div><h3>Comportamentos</h3><p>Pequenos passos práticos entre as sessões, para a mudança acontecer na sua rotina.</p></div></div></div></section>
+<section class="wrap"><div class="card resp"><h2>Respire um minuto comigo</h2>
+<p class="mut">Um exercício simples para desacelerar antes de decidir qualquer coisa.</p>
+<button class="orb" id="orb" aria-live="polite"><span id="orbt">Começar</span></button>
+<p class="mut" id="orbc"></p></div></section>
+<section class="wrap" id="agendar"><div class="card book"><h2>Agende sua primeira conversa</h2>
+<p class="mut">Sessão de acolhimento de 50 minutos.</p>
+<div class="cal-h"><button class="nav" id="ant" aria-label="Mês anterior">‹</button>
+<select id="selmes" aria-label="Mês"></select><select id="selano" aria-label="Ano"></select>
+<button class="nav" id="prox" aria-label="Próximo mês">›</button></div>
+<div class="grade" id="grade"></div>
+<p class="mut" id="qdia">Escolha um dia no calendário.</p>
+<div class="slots" id="horas"></div>
+<div class="field"><input id="nome" placeholder="Seu nome" autocomplete="name">
+<input id="zap" placeholder="WhatsApp com DDD" inputmode="tel" autocomplete="tel">
+<select id="modo" aria-label="Modalidade"><option>Presencial</option><option>Online</option></select>
+<label style="width:100%;display:flex;gap:8px;align-items:flex-start;font-size:14px;color:var(--mut)"><input type="checkbox" id="lgpd" style="flex:none;min-width:0;width:auto;margin-top:4px"><span>Concordo em compartilhar meu nome e WhatsApp apenas para agendar e confirmar a consulta.</span></label>
+<button class="btn" id="ok" disabled>Agendar horário</button></div>
+<div class="msg" id="msg" hidden></div></div></section>
+<section class="wrap"><div class="card"><h2>Perguntas frequentes</h2>
+<details><summary>Como é a primeira sessão?</summary><p>É uma conversa de acolhimento de 50 minutos, para você contar o que te trouxe e para conhecermos como posso ajudar.</p></details>
+<details><summary>Posso fazer online?</summary><p>Sim. Ao escolher a modalidade online, você recebe o link da sessão antes do horário.</p></details>
+<details><summary>Como funcionam meus dados?</summary><p>Eles são usados apenas para agendar e confirmar a sua consulta.</p></details>
+<details><summary>Posso remarcar?</summary><p>Pode. Avise pelo WhatsApp com antecedência para combinarmos um novo horário.</p></details></div></section>
+<p class="foot">Rua Flávio Fongaro, 592, Vila Caminho do Mar, São Bernardo do Campo<br><span id="crp"></span><br>Seus dados são usados apenas para agendar e confirmar sua consulta.<br>Em crise, ligue 188 (CVV), 24 horas.</p>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+const C=CFG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_KEY),$=i=>document.getElementById(i);
+let dia=null,hora=null,ocupados=[];
+const ATEND=C.DIAS_ATENDIMENTO||[0,1,2,3,4,5,6];
+const hojeD=new Date();hojeD.setHours(0,0,0,0);
+const limite=C.MESES_A_FRENTE?new Date(hojeD.getFullYear(),hojeD.getMonth()+C.MESES_A_FRENTE+1,0):null;
+let mes=new Date(hojeD.getFullYear(),hojeD.getMonth(),1);
+$('quem').textContent=C.NOME+', '+C.SUBTITULO+(C.CRP?', '+C.CRP:'');$('crp').textContent=C.CRP||'';$('logo').textContent=C.NOME;document.title='Agende com '+C.NOME;
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const livre=d=>d>=hojeD&&ATEND.includes(d.getDay())&&(!limite||d<=limite);
+
+for(let m=0;m<12;m++){const o=document.createElement('option');o.value=m;o.textContent=new Date(2000,m,1).toLocaleDateString('pt-BR',{month:'long'});$('selmes').appendChild(o)}
+function addAno(y){if([...$('selano').options].some(o=>+o.value===y))return;const o=document.createElement('option');o.value=y;o.textContent=y;$('selano').appendChild(o)}
+for(let y=hojeD.getFullYear();y<hojeD.getFullYear()+10;y++)addAno(y);
+function ir(y,m){let d=new Date(y,m,1);const min=new Date(hojeD.getFullYear(),hojeD.getMonth(),1);if(d<min)d=min;mes=d;desenha()}
+$('ant').onclick=()=>ir(mes.getFullYear(),mes.getMonth()-1);
+$('prox').onclick=()=>ir(mes.getFullYear(),mes.getMonth()+1);
+$('selmes').onchange=()=>ir(mes.getFullYear(),+$('selmes').value);
+$('selano').onchange=()=>ir(+$('selano').value,mes.getMonth());
+
+let bloq={};
+async function carregaBloq(){const y=mes.getFullYear(),m=mes.getMonth(),k=y+'-'+m;if(bloq[k])return;bloq[k]=[];
+  try{const{data}=await sb.rpc('bloqueios_publicos',{ini:ymd(new Date(y,m,1)),fim:ymd(new Date(y,m+1,0))});bloq[k]=data||[]}catch(e){}}
+const diaBloq=d=>(bloq[d.getFullYear()+'-'+d.getMonth()]||[]).some(b=>b.data===ymd(d)&&!b.hora);
+function calendario(){
+  const y=mes.getFullYear(),m=mes.getMonth();addAno(y);
+  if(!bloq[y+'-'+m])carregaBloq().then(calendario);
+  $('selmes').value=m;$('selano').value=y;
+  $('ant').disabled=y===hojeD.getFullYear()&&m===hojeD.getMonth();
+  $('prox').disabled=!!limite&&new Date(y,m+1,1)>limite;
+  const g=$('grade');g.innerHTML='';
+  ['dom','seg','ter','qua','qui','sex','sáb'].forEach(s=>{const e=document.createElement('div');e.className='sem';e.textContent=s;g.appendChild(e)});
+  for(let i=0;i<new Date(y,m,1).getDay();i++)g.appendChild(document.createElement('div'));
+  for(let n=1;n<=new Date(y,m+1,0).getDate();n++){
+    const d=new Date(y,m,n),b=document.createElement('button');b.className='d'+(ymd(d)===ymd(hojeD)?' hoje':'');
+    b.textContent=n;b.disabled=!livre(d)||diaBloq(d);b.setAttribute('aria-pressed',ymd(d)===dia);b.onclick=()=>escolherDia(d);g.appendChild(b)}
+}
+async function escolherDia(d){dia=ymd(d);hora=null;mes=new Date(d.getFullYear(),d.getMonth(),1);
+  const{data}=await sb.rpc('horarios_ocupados',{dia});ocupados=(data||[]).map(x=>x.hora.slice(0,5));await carregaBloq();ocupados=ocupados.concat((bloq[d.getFullYear()+'-'+d.getMonth()]||[]).filter(b=>b.data===dia&&b.hora).map(b=>b.hora.slice(0,5)));desenha()}
+function desenha(){
+  calendario();$('horas').innerHTML='';
+  $('qdia').textContent=dia?'Horários de '+new Date(dia+'T12:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}):'Escolha um dia no calendário.';
+  if(!dia){valida();return}
+  const agora=new Date(),hoje=ymd(agora)===dia;
+  C.HORAS.forEach(h=>{const b=document.createElement('button');b.className='chip';b.textContent=h;
+    const passou=hoje&&(+h.slice(0,2)*60+ +h.slice(3))<=agora.getHours()*60+agora.getMinutes();
+    b.disabled=ocupados.includes(h)||passou;b.setAttribute('aria-pressed',hora===h);b.onclick=()=>{hora=h;desenha()};$('horas').appendChild(b)});
+  valida()}
+function valida(){$('ok').disabled=!(dia&&hora&&$('nome').value.trim()&&$('zap').value.replace(/\D/g,'').length>=10&&$('lgpd').checked)}
+$('nome').oninput=$('zap').oninput=valida;$('lgpd').onchange=valida;
+$('ok').onclick=async()=>{
+  const nome=$('nome').value.trim(),modo=$('modo').value;let zap=$('zap').value.replace(/\D/g,'');if(zap.length<=11)zap='55'+zap;
+  const link=modo==='Online'?'https://meet.jit.si/consulta-'+crypto.randomUUID().slice(0,12):null;
+  $('ok').disabled=true;
+  const{error}=await sb.from('consultas').insert({data:dia,hora,nome,whatsapp:zap,modalidade:modo,link_sessao:link,valor:C.VALOR});
+  $('msg').hidden=false;
+  if(error){
+    $('msg').textContent=error.code==='23505'?'Esse horário acabou de ser ocupado. Escolha outro.':'Não foi possível agendar: '+error.message;
+    await escolherDia(new Date(dia+'T12:00'));
+    return;
+  }
+  $('msg').textContent='Pronto, '+nome+'. Seu horário foi reservado e vou confirmar pelo WhatsApp.';
+  $('nome').value='';$('zap').value='';
+  await escolherDia(new Date(dia+'T12:00'));
+};
+
+let resp=null;
+function parar(){clearInterval(resp);resp=null;$('orb').className='orb';$('orbt').textContent='Começar'}
+$('orb').onclick=()=>{
+  if(resp){parar();$('orbc').textContent='';return}
+  let t=0;
+  const passo=()=>{
+    if(t>=12){parar();$('orbc').textContent='Pronto. Quando quiser, escolha um horário abaixo.';return}
+    const inala=t%2===0;$('orb').className='orb '+(inala?'in':'out');$('orbt').textContent=inala?'Inspire':'Expire';
+    $('orbc').textContent='Ciclo '+(Math.floor(t/2)+1)+' de 6';t++};
+  passo();resp=setInterval(passo,4000)};
+
+async function vagaProxima(){
+  try{
+    const agora=new Date();
+    const{data:bl}=await sb.rpc('bloqueios_publicos',{ini:ymd(hojeD),fim:ymd(new Date(hojeD.getTime()+31*864e5))});const B=bl||[];
+    for(let i=0;i<30;i++){
+      const d=new Date(hojeD);d.setDate(d.getDate()+i);if(!livre(d)||B.some(b=>b.data===ymd(d)&&!b.hora))continue;
+      const{data}=await sb.rpc('horarios_ocupados',{dia:ymd(d)});
+      const oc=(data||[]).map(x=>x.hora.slice(0,5)).concat(B.filter(b=>b.data===ymd(d)&&b.hora).map(b=>b.hora.slice(0,5)));
+      const h=C.HORAS.find(x=>!oc.includes(x)&&!(i===0&&(+x.slice(0,2)*60+ +x.slice(3))<=agora.getHours()*60+agora.getMinutes()));
+      if(h){const b=$('vaga');b.hidden=false;
+        b.textContent='Próxima vaga: '+d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})+' às '+h+'. Reservar';
+        b.onclick=async()=>{await escolherDia(d);hora=h;desenha();$('agendar').scrollIntoView({behavior:'smooth'})};return}
+    }
+  }catch(e){}
+}
+if(C.WHATSAPP){const a=document.createElement('a');a.className='wa';a.href='https://wa.me/'+C.WHATSAPP.replace(/\D/g,'');a.target='_blank';a.rel='noopener';a.textContent='Falar no WhatsApp';document.body.appendChild(a)}
+desenha();vagaProxima();
+</script></body></html>
