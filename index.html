@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR"><head><meta charset="utf-8">
+<script>document.documentElement.classList.add("js")</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Larissa Amigo, psicóloga clínica em São Bernardo do Campo (TCC)</title>
 <meta name="description" content="Larissa Amigo, psicóloga clínica especialista em Terapia Cognitivo-Comportamental (TCC) em São Bernardo do Campo. Atendimento presencial e online. Agende pelo site.">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Larissa Amigo, Psicóloga Clínica (TCC)","telephone":"+5511959910252","address":{"@type":"PostalAddress","streetAddress":"Rua Flávio Fongaro, 592, Vila Caminho do Mar","addressLocality":"São Bernardo do Campo","addressRegion":"SP","postalCode":"09726-430","addressCountry":"BR"},"openingHours":"Mo-Fr 09:00-22:00"}</script>
-<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
 html{scroll-behavior:smooth}
 .top2{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top));backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg) 80%,transparent)}
-.logo{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:18px}
+.logo{font-family:"Cormorant Garamond",Georgia,serif;font-weight:700;font-size:25px}
 .top2 .btn{text-decoration:none}
 .h{position:relative;overflow:hidden;padding:56px 16px 64px;background:radial-gradient(900px 400px at 15% 0%,color-mix(in srgb,var(--ac) 38%,transparent),transparent),radial-gradient(700px 360px at 90% 30%,color-mix(in srgb,var(--ok) 30%,transparent),transparent)}
 .hin{position:relative;max-width:880px;margin:0 auto}
@@ -46,7 +47,7 @@ html{scroll-behavior:smooth}
 .d[aria-pressed=true]{background:var(--ac);color:var(--acink);border-color:var(--ac)}
 .vaga{display:block;margin-top:14px;border:1.5px solid var(--ac);background:color-mix(in srgb,var(--s) 75%,transparent);border-radius:999px;padding:10px 18px;font-weight:600;text-align:left}
 .resp{text-align:center}
-.orb{width:170px;height:170px;margin:20px auto 6px;border:0;border-radius:50%;display:grid;place-items:center;font:400 20px "Young Serif",Georgia,serif;color:var(--acink);background:radial-gradient(circle at 35% 30%,var(--ok),var(--ac));box-shadow:0 14px 40px color-mix(in srgb,var(--ac) 40%,transparent);transition:transform 4s ease-in-out}
+.orb{width:170px;height:170px;margin:20px auto 6px;border:0;border-radius:50%;display:grid;place-items:center;font:700 26px "Cormorant Garamond",Georgia,serif;color:var(--acink);background:radial-gradient(circle at 35% 30%,var(--ok),var(--ac));box-shadow:0 14px 40px color-mix(in srgb,var(--ac) 40%,transparent);transition:transform 4s ease-in-out}
 .orb.in{transform:scale(1.35)}.orb.out{transform:scale(.85)}
 @media(prefers-reduced-motion:reduce){.orb{transition:none}}
 details{border-top:1px solid var(--line);padding:12px 0}
@@ -61,9 +62,41 @@ details p{margin:8px 0 0;color:var(--mut)}
 .ph img{position:relative;z-index:1}
 .ph img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:999px 999px 28px 28px;box-shadow:0 20px 50px color-mix(in srgb,var(--ac) 25%,transparent)}
 .tri{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
-.tri h3{font-family:"Young Serif",Georgia,serif;font-weight:400;color:var(--ac);margin:0 0 4px;font-size:20px}
+.tri h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:700;color:var(--ac);margin:0 0 4px;font-size:26px}
 .tri p{margin:0;color:var(--mut);font-size:15px}
 @media(max-width:760px){.hgrid{grid-template-columns:1fr}.ph{order:-1;width:min(230px,70%);justify-self:start}.tri{grid-template-columns:1fr}}
+/* premium terracota */
+.top2{border-bottom:1px solid var(--line)}
+.h{padding:76px 16px 88px;background:radial-gradient(900px 420px at 10% 0%,color-mix(in srgb,var(--ac) 22%,transparent),transparent),radial-gradient(700px 380px at 96% 45%,color-mix(in srgb,var(--warn) 20%,transparent),transparent)}
+.hin{max-width:1040px}
+.h h1{font-size:clamp(40px,8.6vw,72px);line-height:1.03;max-width:11em;font-weight:600}
+.lead{font-size:clamp(17px,2.4vw,20px)}
+.btn.big{border-radius:999px;padding:17px 34px;letter-spacing:.02em}
+.pill{border-color:color-mix(in srgb,var(--warn) 55%,var(--line));letter-spacing:.02em}
+.pts li{border-radius:999px}
+.b2{background:var(--warn)}
+.ph{width:min(380px,82%)}
+.ph::before{background:color-mix(in srgb,var(--ac) 24%,var(--soft))}
+.ph::after{border-color:var(--warn);opacity:.75}
+.ph img{object-position:46% 22%;box-shadow:0 34px 70px -28px color-mix(in srgb,var(--ac) 60%,transparent)}
+.orb{background:radial-gradient(circle at 35% 30%,var(--warn),var(--ac))}
+.steps li{border-radius:20px}
+.foot{background:var(--ac);color:var(--acink);padding:34px 16px 48px;line-height:1.9;margin:0}
+@media(max-width:760px){.ph{width:min(250px,72%)}}
+.b2{bottom:8%;opacity:.35}
+/* movimento */
+@keyframes up{from{opacity:0;transform:translateY(22px)}}
+@keyframes rev{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+.hin>div:first-child>*{animation:up .9s cubic-bezier(.2,.7,.2,1) both}
+.ph img{animation:rev 1.3s cubic-bezier(.2,.7,.2,1) .15s both}
+.js .rv{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.js .rv.in{opacity:1;transform:none}
+#bar{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--ac),var(--warn));transform-origin:0 50%;transform:scaleX(0);z-index:20}
+.top2{transition:box-shadow .3s,background .3s}.top2.sc{box-shadow:0 10px 30px -18px color-mix(in srgb,var(--ac) 50%,transparent)}
+.btn,.chip,.vaga{transition:transform .25s,box-shadow .25s,background .25s}
+.btn:hover,.vaga:hover{transform:translateY(-2px)}
+.chip:not(:disabled):hover{transform:translateY(-2px)}
+@media(prefers-reduced-motion:reduce){.hin>div:first-child>*,.ph img{animation:none!important}.btn,.chip,.vaga{transition:none}}
 </style></head>
 <body>
 <header class="top2"><span class="logo" id="logo">Agende sua consulta</span><a class="btn s" href="#agendar">Agendar</a></header>
@@ -207,4 +240,20 @@ async function vagaProxima(){
 }
 if(C.WHATSAPP){const a=document.createElement('a');a.className='wa';a.href='https://wa.me/'+C.WHATSAPP.replace(/\D/g,'');a.target='_blank';a.rel='noopener';a.textContent='Falar no WhatsApp';document.body.appendChild(a)}
 desenha();vagaProxima();
+</script><script>
+(()=>{try{
+const rm=matchMedia('(prefers-reduced-motion:reduce)').matches,Q=s=>[...document.querySelectorAll(s)];
+const bar=document.createElement('div');bar.id='bar';document.body.append(bar);
+const hd=document.querySelector('.top2'),ph=document.querySelector('.ph'),b1=document.querySelector('.b1'),b2=document.querySelector('.b2');
+Q('.hin>div:first-child>*').forEach((e,i)=>e.style.animationDelay=(i*90)+'ms');
+let tk=false;
+const upd=()=>{tk=false;const y=scrollY,m=document.documentElement.scrollHeight-innerHeight;
+bar.style.transform='scaleX('+(m>0?Math.min(y/m,1):0)+')';hd&&hd.classList.toggle('sc',y>16);
+if(!rm&&y<900){ph&&(ph.style.translate='0 '+(y*.07)+'px');b1&&(b1.style.translate='0 '+(y*.18)+'px');b2&&(b2.style.translate='0 '+(-y*.12)+'px')}};
+addEventListener('scroll',()=>{if(!tk){tk=true;requestAnimationFrame(upd)}},{passive:true});upd();
+if(!rm&&'IntersectionObserver' in window){
+ const T=new Set(Q('.steps h2,.steps li,#sobre .card,.tri>div,.resp,.book,.wrap>.card,.foot'));
+ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+ T.forEach(el=>{el.classList.add('rv');const i=[...el.parentElement.children].indexOf(el);el.style.transitionDelay=Math.min(i*90,360)+'ms';io.observe(el)});
+}}catch(e){document.documentElement.classList.remove('js')}})();
 </script></body></html>

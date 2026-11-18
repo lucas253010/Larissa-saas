@@ -2,14 +2,20 @@
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex"><title>Painel da Larissa</title>
-<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
 .kpi{background:var(--s);border:1px solid var(--line);border-radius:16px;padding:16px}
-.kpi b{display:block;font-weight:400;font-family:"Young Serif",Georgia,serif;font-size:clamp(20px,3.4vw,30px);line-height:1.2}
+.kpi b{display:block;font-variant-numeric:lining-nums;font-size:1.15em;font-weight:700;font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(20px,3.4vw,30px);line-height:1.2}
 .kpi span{font-size:13px;color:var(--mut)}
-.kpi.hero{background:linear-gradient(135deg,var(--ac),var(--ok));border:0;color:var(--acink)}
+@keyframes up{from{opacity:0;transform:translateY(16px)}}
+.kpi,.card{animation:up .65s cubic-bezier(.2,.7,.2,1) both}
+.kpi:nth-child(2){animation-delay:.07s}.kpi:nth-child(3){animation-delay:.14s}.kpi:nth-child(4){animation-delay:.21s}
+.btn{transition:transform .2s}.btn:hover{transform:translateY(-1px)}
+@media(prefers-reduced-motion:reduce){.kpi,.card{animation:none}.btn{transition:none}}
+.av{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:46% 22%;vertical-align:middle;margin-right:12px;box-shadow:0 0 0 2px var(--warn)}
+.kpi.hero{background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 55%,var(--warn)));border:0;color:var(--acink)}
 .kpi.hero span{color:inherit;opacity:.85}
 .g2{display:grid;grid-template-columns:2fr 1fr;gap:16px}.g2 .card{margin-bottom:16px}
 .cw{position:relative;height:250px;margin-top:10px}
@@ -32,7 +38,7 @@ summary .mut{font-weight:400;margin:0;font-size:14px}
 <input id="pw" type="password" placeholder="Senha" autocomplete="current-password">
 <button class="btn" id="entrar">Entrar</button></div><p class="mut" id="err"></p></section>
 <div id="app" hidden>
-<div class="top"><h2>Painel<span class="badge" id="bd" hidden>dados de exemplo</span></h2>
+<div class="top"><h2><img class="av" src="foto-larissa.jpg" alt="">Painel da Larissa<span class="badge" id="bd" hidden>dados de exemplo</span></h2>
 <div class="acts" style="width:auto;margin:0"><button class="btn s" id="demo">Ver com dados de exemplo</button><button class="btn s" id="sair">Sair</button></div></div>
 <div class="kpis">
 <div class="kpi hero"><b id="k1">R$ 0,00</b><span>recebido no mês</span></div>
