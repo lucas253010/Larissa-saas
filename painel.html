@@ -249,25 +249,18 @@ summary .mut{font-weight:400;margin:0;font-size:14px}
       <label>Percepção clínica de evolução<select name="evolucao_nota"><option value="">Não avaliado</option><option value="1">1 · Momento mais difícil</option><option value="2">2 · Pequenos avanços / desafios</option><option value="3">3 · Estável / em construção</option><option value="4">4 · Avanços percebidos</option><option value="5">5 · Avanços consistentes</option></select></label>
       <label class="wide">Evolução e anotações da sessão<textarea name="conteudo" rows="7" placeholder="Registre de forma objetiva os pontos relevantes, falas importantes e evolução observada..."></textarea></label>
       <div class="sessao-intervencoes wide">
-        <div class="sessao-intervencoes-titulo"><b>Intervenções / estratégias utilizadas</b><small>Selecione todas as estratégias utilizadas e complemente se necessário.</small></div>
-        <div class="intervencoes-grupos">
-          <fieldset class="intervencao-grupo"><legend>Acolhimento e escuta</legend><div class="intervencao-opcoes">
-            <label><input type="checkbox" data-intervencao="Escuta ativa">Escuta ativa</label><label><input type="checkbox" data-intervencao="Acolhimento emocional">Acolhimento emocional</label><label><input type="checkbox" data-intervencao="Validação emocional">Validação emocional</label><label><input type="checkbox" data-intervencao="Empatia terapêutica">Empatia terapêutica</label>
-          </div></fieldset>
-          <fieldset class="intervencao-grupo"><legend>Técnicas cognitivas</legend><div class="intervencao-opcoes">
-            <label><input type="checkbox" data-intervencao="Identificação de pensamentos automáticos">Identificação de pensamentos automáticos</label><label><input type="checkbox" data-intervencao="Questionamento de crenças">Questionamento de crenças</label><label><input type="checkbox" data-intervencao="Reestruturação cognitiva">Reestruturação cognitiva</label><label><input type="checkbox" data-intervencao="Psicoeducação">Psicoeducação</label>
-          </div></fieldset>
-          <fieldset class="intervencao-grupo"><legend>Técnicas emocionais</legend><div class="intervencao-opcoes">
-            <label><input type="checkbox" data-intervencao="Regulação emocional">Regulação emocional</label><label><input type="checkbox" data-intervencao="Identificação de emoções">Identificação de emoções</label><label><input type="checkbox" data-intervencao="Exercícios de respiração">Exercícios de respiração</label><label><input type="checkbox" data-intervencao="Mindfulness">Mindfulness</label>
-          </div></fieldset>
-          <fieldset class="intervencao-grupo"><legend>Estratégias comportamentais</legend><div class="intervencao-opcoes">
-            <label><input type="checkbox" data-intervencao="Estratégias de enfrentamento">Estratégias de enfrentamento</label><label><input type="checkbox" data-intervencao="Resolução de problemas">Resolução de problemas</label><label><input type="checkbox" data-intervencao="Treino de habilidades sociais">Treino de habilidades sociais</label><label><input type="checkbox" data-intervencao="Exposição gradual">Exposição gradual</label>
-          </div></fieldset>
-          <fieldset class="intervencao-grupo"><legend>Reflexão e desenvolvimento</legend><div class="intervencao-opcoes">
-            <label><input type="checkbox" data-intervencao="Autoconhecimento">Autoconhecimento</label><label><input type="checkbox" data-intervencao="Estabelecimento de limites">Estabelecimento de limites</label><label><input type="checkbox" data-intervencao="Fortalecimento da autoestima">Fortalecimento da autoestima</label><label><input type="checkbox" data-intervencao="Reflexão sobre padrões de comportamento">Reflexão sobre padrões de comportamento</label>
-          </div></fieldset>
-        </div>
-        <label class="intervencao-manual">Outra estratégia / observações<textarea name="intervencoes_manual" rows="3" placeholder="Descreva uma técnica específica ou detalhe como a estratégia foi aplicada..."></textarea></label>
+        <label>Intervenções / estratégias utilizadas
+          <select id="intervencoes-selecao" aria-label="Selecionar uma estratégia">
+            <option value="">Selecione uma estratégia (opcional)</option>
+            <optgroup label="Acolhimento e escuta"><option>Escuta ativa</option><option>Acolhimento emocional</option><option>Validação emocional</option><option>Empatia terapêutica</option></optgroup>
+            <optgroup label="Técnicas cognitivas"><option>Identificação de pensamentos automáticos</option><option>Questionamento de crenças</option><option>Reestruturação cognitiva</option><option>Psicoeducação</option></optgroup>
+            <optgroup label="Técnicas emocionais"><option>Regulação emocional</option><option>Identificação de emoções</option><option>Exercícios de respiração</option><option>Mindfulness</option></optgroup>
+            <optgroup label="Estratégias comportamentais"><option>Estratégias de enfrentamento</option><option>Resolução de problemas</option><option>Treino de habilidades sociais</option><option>Exposição gradual</option></optgroup>
+            <optgroup label="Reflexão e desenvolvimento"><option>Autoconhecimento</option><option>Estabelecimento de limites</option><option>Fortalecimento da autoestima</option><option>Reflexão sobre padrões de comportamento</option></optgroup>
+          </select>
+        </label>
+        <div id="intervencoes-selecionadas" class="intervencoes-selecionadas" aria-live="polite"></div>
+        <label class="intervencao-manual">Outra estratégia / observações<textarea name="intervencoes_manual" rows="2" placeholder="Escreva aqui, se precisar..."></textarea></label>
         <textarea name="intervencoes" hidden aria-hidden="true"></textarea>
       </div>
       <label>Combinados e tarefas até a próxima sessão<textarea name="tarefas" rows="4" placeholder="Atividades, observações ou combinados com o paciente..."></textarea></label>
