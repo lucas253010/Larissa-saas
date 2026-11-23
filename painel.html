@@ -693,4 +693,4 @@ $('csv').onclick=()=>{const L=[['Data','Hora','Paciente','WhatsApp','Modalidade'
   const csv='\ufeff'+L.map(l=>l.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='consultas.csv';a.click()};
 init();
-</script><script src="painel-extras.js"></script>\n</body></html>
+</script><script src="painel-extras.js"></script>\n<script src="sessao.js"></script>\n</body></html>
