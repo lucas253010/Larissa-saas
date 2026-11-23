@@ -3,7 +3,7 @@
   const $s=id=>document.getElementById(id);
   const form=$s('form-sessao');
   if(!form)return;
-  let consultaAtual=null, pacienteAtual=null, anotacaoAtual=null;
+  let consultaAtual=null, pacienteAtual=null, anotacaoAtual=null, graficoEvolucao=null;
   const normS=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   const safeS=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const dateS=s=>s?new Date(s+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}):'';
@@ -12,6 +12,7 @@
   const readForm=()=>({
     conteudo:field('conteudo').value.trim(),
     humor:field('humor').value||null,
+    evolucao_nota:field('evolucao_nota').value?Number(field('evolucao_nota').value):null,
     temas:field('temas').value.trim()||null,
     intervencoes:field('intervencoes').value.trim()||null,
     tarefas:field('tarefas').value.trim()||null,
@@ -19,7 +20,7 @@
   });
   const fillForm=a=>{
     const x=a||{};
-    ['conteudo','humor','temas','intervencoes','tarefas','plano'].forEach(k=>field(k).value=x[k]||'');
+    ['conteudo','humor','evolucao_nota','temas','intervencoes','tarefas','plano'].forEach(k=>field(k).value=x[k]??'');
   };
   function showArea(){
     if(typeof trocaAba==='function')trocaAba('sessao');
@@ -57,6 +58,8 @@
     }).sort((a,b)=>(b.data+String(b.hora)).localeCompare(a.data+String(a.hora)));
     if(!rel.length){$s('sessao-historico-lista').innerHTML='<p class="mut">Nenhuma outra sessão encontrada.</p>';return}
     if(demoOn){
+      const demoMap=new Map(rel.filter(x=>x._anotacao).map(x=>[String(x.id),x._anotacao]));
+      renderEvolucao(rel,demoMap);
       const anteriores=rel.filter(x=>String(x.id)!==String(consultaAtual.id));
       $s('sessao-historico-lista').innerHTML=anteriores.map(x=>{
         const n=x._anotacao;
@@ -66,15 +69,30 @@
       return;
     }
     const ids=rel.map(x=>x.id);
-    const {data,error}=await sb.from('anotacoes_consultas').select('consulta_id,conteudo,humor,temas,intervencoes,tarefas,plano,atualizado_em').in('consulta_id',ids);
+    const {data,error}=await sb.from('anotacoes_consultas').select('consulta_id,conteudo,humor,temas,intervencoes,tarefas,plano,evolucao_nota,atualizado_em').in('consulta_id',ids);
     if(error){$s('sessao-historico-lista').innerHTML='<p class="mut">Não foi possível carregar o histórico. Verifique se a migração da área de sessão foi aplicada.</p>';return}
     const byId=new Map((data||[]).map(n=>[String(n.consulta_id),n]));
+    renderEvolucao(rel,byId);
     const itens=rel.filter(x=>String(x.id)!==String(consultaAtual.id));
     $s('sessao-historico-lista').innerHTML=itens.length?itens.map(x=>{
       const n=byId.get(String(x.id));
       return '<details class="sessao-historico-item"><summary><b>'+safeS(dateS(x.data))+'</b><span class="mut">'+safeS(String(x.hora||'').slice(0,5))+' · '+(n?'Registro salvo':'Sem anotação')+'</span></summary>'+
-        (n?'<p>'+safeS(n.conteudo||'Sem evolução registrada')+'</p>'+'<p class="mut">'+(n.humor?'Humor: '+safeS(n.humor)+' · ':'')+(n.temas?'Temas: '+safeS(n.temas):'')+'</p>':'<p class="mut">Nenhuma anotação salva nesta consulta.</p>')+'</details>';
+        (n?'<p>'+safeS(n.conteudo||'Sem evolução registrada')+'</p>'+'<p class="mut">'+(n.humor?'Humor: '+safeS(n.humor)+' · ':'')+(n.evolucao_nota?'Evolução: '+safeS(n.evolucao_nota)+'/5 · ':'')+(n.temas?'Temas: '+safeS(n.temas):'')+'</p>':'<p class="mut">Nenhuma anotação salva nesta consulta.</p>')+'</details>';
     }).join(''):'<p class="mut">Este é o primeiro registro de sessão deste paciente.</p>';
+  }
+  function renderEvolucao(rel, anotacoes){
+    const canvas=$s('sessao-grafico'), vazio=$s('sessao-evolucao-vazio');
+    if(!canvas||!window.Chart)return;
+    const pontos=(rel||[]).map(r=>({r,n:anotacoes instanceof Map?anotacoes.get(String(r.id)):null}))
+      .filter(x=>x.n&&Number(x.n.evolucao_nota)>=1&&Number(x.n.evolucao_nota)<=5)
+      .sort((a,b)=>(a.r.data+String(a.r.hora)).localeCompare(b.r.data+String(b.r.hora)));
+    if(graficoEvolucao){graficoEvolucao.destroy();graficoEvolucao=null;}
+    vazio.hidden=!!pontos.length; canvas.parentElement.hidden=!pontos.length;
+    if(!pontos.length)return;
+    graficoEvolucao=new Chart(canvas,{type:'line',data:{
+      labels:pontos.map(x=>new Date(x.r.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'})),
+      datasets:[{label:'Evolução registrada',data:pontos.map(x=>Number(x.n.evolucao_nota)),borderColor:'#a36d55',backgroundColor:'rgba(163,109,85,.14)',fill:true,tension:.28,pointRadius:4,pointHoverRadius:6}]
+    },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>['','1 · Momento mais difícil','2 · Pequenos avanços / desafios','3 · Estável / em construção','4 · Avanços percebidos','5 · Avanços consistentes'][c.parsed.y]||String(c.parsed.y)}}},scales:{y:{min:1,max:5,ticks:{stepSize:1}},x:{grid:{display:false}}}}});
   }
   async function openSession(id){
     const r=(dados()||[]).find(x=>String(x.id)===String(id));
@@ -136,7 +154,7 @@
       });
       return;
     }
-    const {data,error}=await sb.from('anotacoes_consultas').select('consulta_id,conteudo,humor,temas,intervencoes,tarefas,plano').in('consulta_id',ids);
+    const {data,error}=await sb.from('anotacoes_consultas').select('consulta_id,conteudo,humor,temas,intervencoes,tarefas,plano,evolucao_nota').in('consulta_id',ids);
     if(error){nodes.forEach(n=>n.innerHTML='<span class="mut">Não foi possível carregar a anotação. Verifique a migração SQL.</span>');return}
     const map=new Map((data||[]).map(a=>[String(a.consulta_id),a]));
     nodes.forEach(n=>{
