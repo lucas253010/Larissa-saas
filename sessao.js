@@ -191,23 +191,45 @@
     setMsg(data?'Último salvamento: '+new Date(data.atualizado_em||data.criado_em).toLocaleString('pt-BR'):'Ainda não salvo');
     await loadHistory();
   }
+  const botaoSalvar=$s('sessao-salvar');
+  const marcarAlteracao=()=>{
+    if(botaoSalvar.disabled)return;
+    botaoSalvar.textContent='Salvar registro';
+    botaoSalvar.classList.remove('sessao-salvo-ok');
+  };
+  form.addEventListener('input',marcarAlteracao);
+  form.addEventListener('change',marcarAlteracao);
   form.addEventListener('submit',async e=>{
     e.preventDefault();
     if(!consultaAtual)return;
     const payload={consulta_id:consultaAtual.id,...readForm()};
-    if(demoOn){consultaAtual._anotacao=payload;anotacaoAtual=payload;setMsg('Salvo apenas nesta demonstração');return}
-    const btn=$s('sessao-salvar');btn.disabled=true;btn.textContent='Salvando…';
+    if(demoOn){
+      consultaAtual._anotacao=payload;anotacaoAtual=payload;
+      botaoSalvar.textContent='Salvo ✓';botaoSalvar.classList.add('sessao-salvo-ok');
+      setMsg('Salvo apenas nesta demonstração · não vai para o banco');
+      return;
+    }
+    botaoSalvar.disabled=true;botaoSalvar.textContent='Salvando…';
+    botaoSalvar.classList.remove('sessao-salvo-ok');
     const {data,error}=await sb.from('anotacoes_consultas').upsert(payload,{onConflict:'consulta_id'}).select().single();
-    btn.disabled=false;btn.textContent='Salvar registro';
-    if(error){setMsg('Falha ao salvar');alert('Não foi possível salvar o registro: '+error.message);return}
-    anotacaoAtual=data;setMsg('Salvo em '+new Date(data.atualizado_em||data.criado_em).toLocaleString('pt-BR'));
+    botaoSalvar.disabled=false;
+    if(error){
+      botaoSalvar.textContent='Tentar salvar novamente';
+      setMsg('Falha ao salvar');
+      alert('Não foi possível salvar o registro: '+error.message);
+      return;
+    }
+    anotacaoAtual=data;
+    botaoSalvar.textContent='Salvo ✓';
+    botaoSalvar.classList.add('sessao-salvo-ok');
+    setMsg('Anotações salvas com sucesso em '+new Date(data.atualizado_em||data.criado_em).toLocaleString('pt-BR'));
     $s('sessao-status').textContent='Registro salvo';
     await loadHistory();
     document.querySelectorAll('details[data-k][open]').forEach(d=>loadPatientNotes(d));
   });
   $s('sessao-limpar').addEventListener('click',()=>{
     if(!confirm('Limpar os campos desta tela? O que já foi salvo no banco não será apagado.'))return;
-    fillForm(null);setMsg('Campos limpos · ainda não salvos');
+    fillForm(null);marcarAlteracao();setMsg('Campos limpos · ainda não salvos');
   });
   document.addEventListener('click',e=>{
     const b=e.target.closest('[data-a="sessao"]');
