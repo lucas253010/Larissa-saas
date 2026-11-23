@@ -236,6 +236,25 @@ summary .mut{font-weight:400;margin:0;font-size:14px}
   <div id="pacientes"></div>
 </section>
 
+<section class="card" id="p-sessao" hidden>
+  <div class="sessao-head"><div><span class="sessao-eyebrow">ESPAÇO DE ATENDIMENTO</span><h2 id="sessao-titulo">Sessão clínica</h2><p class="mut" id="sessao-subtitulo">Selecione uma consulta na agenda ou no histórico do paciente.</p></div><span class="sessao-status" id="sessao-status">Não iniciado</span></div>
+  <div id="sessao-paciente" class="sessao-paciente"><p class="mut">Os dados do paciente aparecerão aqui quando você abrir uma sessão.</p></div>
+  <form id="form-sessao" class="sessao-form">
+    <input type="hidden" name="consulta_id">
+    <div class="sessao-toolbar"><div><b>Registro clínico</b><small>As informações são privadas e vinculadas a esta consulta.</small></div><span id="sessao-salvo" class="mut" role="status">Ainda não salvo</span></div>
+    <div class="sessao-fields">
+      <label>Humor / estado emocional observado<select name="humor"><option value="">Não registrado</option><option>Tranquilo</option><option>Ansioso</option><option>Triste</option><option>Irritado</option><option>Desanimado</option><option>Estável</option><option>Variável</option><option>Outro / não especificado</option></select></label>
+      <label>Temas trabalhados<input name="temas" maxlength="500" placeholder="Ex.: relações, trabalho, autoestima..."></label>
+      <label class="wide">Evolução e anotações da sessão<textarea name="conteudo" rows="7" placeholder="Registre de forma objetiva os pontos relevantes, falas importantes e evolução observada..."></textarea></label>
+      <label>Intervenções / estratégias utilizadas<textarea name="intervencoes" rows="4" placeholder="Técnicas, perguntas, exercícios ou intervenções..."></textarea></label>
+      <label>Combinados e tarefas até a próxima sessão<textarea name="tarefas" rows="4" placeholder="Atividades, observações ou combinados com o paciente..."></textarea></label>
+      <label class="wide">Pontos para retomar na próxima sessão<textarea name="plano" rows="3" placeholder="Assuntos para acompanhar, objetivos e próximos passos..."></textarea></label>
+    </div>
+    <div class="sessao-footer"><p class="mut">Revise o registro antes de salvar. Evite incluir informações que não sejam necessárias ao acompanhamento.</p><div><button type="button" class="ab ghost" id="sessao-limpar">Limpar campos</button><button type="submit" class="ab pri" id="sessao-salvar">Salvar registro</button></div></div>
+  </form>
+  <div class="sessao-historico"><h3>Registros anteriores deste paciente</h3><div id="sessao-historico-lista"><p class="mut">Abra uma sessão para consultar o histórico.</p></div></div>
+</section>
+
 <section class="card" id="p-cadastro" hidden>
   <h2>Cadastro manual</h2><p class="mut">Cadastre pacientes e marque consultas diretamente pelo painel.</p>
   <div class="extra-grid">
@@ -420,6 +439,7 @@ function sugestao(r){const h=ymd(new Date());
 const formRemarc=r=>`<div class="msg" style="width:100%;margin-top:12px"><div class="field" style="margin:0"><label class="mut" style="margin:0">Nova data<input type="date" value="${r.data}"></label><label class="mut" style="margin:0">Horário<select>${C.HORAS.map(x=>`<option ${x===String(r.hora).slice(0,5)?'selected':''}>${x}</option>`).join('')}</select></label>${ab('rsalva',r.id,'Salvar nova data','check','pri')}</div></div>`;
 const blocoPix=r=>`<div class="msg" style="width:100%;margin-top:12px">Pix de ${brl(r.valor)}. Código copia e cola:<small class="pixc">${pixCode(r.valor)}</small><div class="ac-b" style="margin-top:10px">${ab('copiar',r.id,'Copiar código','copy')}${ab('zappix',r.id,'Enviar por WhatsApp','chat')}${ab('pago',r.id,'Marcar como pago','cash','pri')}</div></div>`;
 function painelAcoes(r){const id=r.id,sg=sugestao(r),h=ymd(new Date()),sessao=[];
+  sessao.push(ab('sessao',id,'Abrir sessão','hoje','pri'));
   if(r.status==='Nova')sessao.push(ab('conf',id,'Confirmar consulta','check',sg.k==='conf'?'pri':''));
   if(!r.presenca&&r.data<=h)sessao.push(ab('pres',id,'Compareceu','ucheck',sg.k==='pres'?'pri':'','Compareceu'),ab('pres',id,'Faltou','ux','','Faltou'));
   const cobr=r.pago?[ab('rec',id,'Gerar recibo','receipt')]:[ab('pix',id,aberto[r.id]?'Ocultar código Pix':'Cobrar por Pix','card',sg.k==='pix'?'pri':''),ab('pago',id,'Marcar como pago','cash')];
@@ -456,7 +476,7 @@ function refresca(){desenha();semana(ativosAgora())}
 const semDe=ds=>{const t=new Date();t.setHours(12,0,0,0);t.setDate(t.getDate()-((t.getDay()+6)%7));const d=new Date(ds+'T12:00');d.setDate(d.getDate()-((d.getDay()+6)%7));return Math.round((d-t)/(7*864e5))};
 function atualiza(){desenha();painel()}
 let filtroAg='todas',qAg='',diasAg=14;
-const TABS=[['hoje','Início','hoje','nh'],['prox','Agenda','agenda','np'],['pac','Pacientes','users',''],['configuracoes','Ajustes','lock','']];
+const TABS=[['hoje','Início','hoje','nh'],['prox','Agenda','agenda','np'],['sessao','Sessão','hoje',''],['pac','Pacientes','users',''],['configuracoes','Ajustes','lock','']];
 function montaTabs(){$('tabs').innerHTML=TABS.map(([k,t,i,c])=>`<button type="button" class="tab" role="tab" data-tab="${k}" aria-selected="${k===aba}">${ic(i)}${t}${c?` <b class="ct" id="${c}">0</b>`:''}</button>`).join('')}
 function desenha(){
   const hoje=ymd(new Date()),at=ativosAgora().slice().sort(cmpS);
@@ -578,6 +598,7 @@ function pacientes() {
               ${r.presenca
                 ? `<span class="tag">${esc(r.presenca)}</span>`
                 : ''}
+              ${ab('sessao',r.id,'Abrir sessão','hoje','ghost')}
             </div>
           `).join('');
 
@@ -616,7 +637,7 @@ function pacientes() {
 }
 $('busca').oninput=pacientes;
 document.addEventListener('toggle',e=>{const d=e.target;if(d.dataset&&d.dataset.k!==undefined)abertoP[d.dataset.k]=d.open},true);
-function trocaAba(a){aba=a;document.querySelectorAll('.tab[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===a));['hoje','novas','prox','cob','pac','blq'].forEach(x=>$('p-'+x).hidden=x!==a)}
+function trocaAba(a){aba=a;document.querySelectorAll('.tab[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===a));['hoje','novas','prox','cob','pac','blq','sessao'].forEach(x=>$('p-'+x).hidden=x!==a)}
 
 async function upd(r,p){if(demoOn){Object.assign(r,p);atualiza();return}const{error}=await sb.from('consultas').update(p).eq('id',r.id);error?alert(error.message):carregar()}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;
