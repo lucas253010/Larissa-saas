@@ -64,7 +64,7 @@
     settings=payload;
     const valorConsulta=$x('form-consulta').elements.valor;
     if(!valorConsulta.dataset.userEdited)valorConsulta.value=defaultConsultValue();
-    msg('config-msg','Configurações salvas. Novas consultas usarão '+brlx(payload.valor)+' como valor padrão. A agenda pública ainda usa config.js.');
+    msg('config-msg','Configurações salvas. Novas consultas usarão '+brlx(payload.valor)+' como valor padrão.');
   });
   const originalCarregar=carregar;
   carregar=async function(){await originalCarregar();if(ready()){await loadPatients();await loadSettings()}};
