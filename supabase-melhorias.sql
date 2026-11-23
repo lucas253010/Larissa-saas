@@ -1,3 +1,9 @@
+-- Atualiza o e-mail autorizado para entrar no painel administrativo.
+create or replace function public.eh_dona() returns boolean
+language sql stable as $$
+  select (auth.jwt() ->> 'email') = 'larissa@painel.com.br'
+$$;
+
 -- Migração para prontuários, cadastro de pacientes e configurações administrativas.
 -- Execute no Supabase > SQL Editor. Faça backup antes de aplicar em produção.
 -- A função eh_dona() existente deve estar configurada com o e-mail real do usuário autorizado.
