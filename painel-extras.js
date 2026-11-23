@@ -1,10 +1,9 @@
 /* Módulos adicionais do painel Larissa. Requer supabase-melhorias.sql. */
 (()=>{
-  const $x=id=>document.getElementById(id), extras=['cadastro','financeiro','configuracoes'];
+  const $x=id=>document.getElementById(id), extras=['cadastro','configuracoes'];
   let patients=[], settings=null;
   const escx=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const msg=(id,t)=>{const e=$x(id);if(e)e.textContent=t||''};
-  const dateNow=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
   const brlx=n=>'R$ '+Number(n||0).toFixed(2).replace('.',',');
   const showTab=(key)=>{['hoje','novas','prox','cob','pac','blq',...extras].forEach(k=>{const p=$x('p-'+k);if(p)p.hidden=k!==key});document.querySelectorAll('.tab[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===key)));};
   try{montaTabs()}catch(e){console.warn('Não foi possível montar a navegação.',e)}
@@ -67,22 +66,9 @@
     if(!valorConsulta.dataset.userEdited)valorConsulta.value=defaultConsultValue();
     msg('config-msg','Configurações salvas. Novas consultas usarão '+brlx(payload.valor)+' como valor padrão. A agenda pública ainda usa config.js.');
   });
-  const renderFinance=()=>{
-    const m=$x('fin-mes').value||dateNow().slice(0,7),list=dados().filter(r=>String(r.data).slice(0,7)===m&&r.status!=='Cancelada');
-    const paid=list.filter(r=>r.pago).reduce((a,r)=>a+Number(r.valor||0),0),due=list.filter(r=>!r.pago).reduce((a,r)=>a+Number(r.valor||0),0);
-    $x('fin-kpis').innerHTML=[['Recebido',brlx(paid)],['A receber',brlx(due)],['Sessões',list.length]].map(([a,b])=>'<div class="extra-kpi"><span>'+a+'</span><strong>'+b+'</strong></div>').join('');
-    $x('fin-lista').innerHTML=list.length?list.sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora)).map(r=>'<div class="row"><span>'+escx(r.data)+' · '+escx(String(r.hora).slice(0,5))+' · '+escx(r.nome)+'</span><strong>'+brlx(r.valor)+' · '+(r.pago?'Pago':'Pendente')+'</strong></div>').join(''):'<p class="mut">Nenhuma sessão neste mês.</p>';
-  };
-  $x('fin-mes').value=dateNow().slice(0,7);$x('fin-mes').addEventListener('change',renderFinance);
-  $x('fin-csv').addEventListener('click',()=>{
-    const m=$x('fin-mes').value, list=dados().filter(r=>String(r.data).slice(0,7)===m&&r.status!=='Cancelada');
-    const lines=[['Data','Hora','Paciente','Modalidade','Status','Pagamento','Valor'],...list.map(r=>[r.data,String(r.hora).slice(0,5),r.nome,r.modalidade,r.status,r.pago?'Pago':'Pendente',Number(r.valor||0).toFixed(2)])];
-    const csv='\ufeff'+lines.map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='financeiro-'+m+'.csv';a.click();URL.revokeObjectURL(url);
-  });
   const originalCarregar=carregar;
-  carregar=async function(){await originalCarregar();if(ready()){await loadPatients();await loadSettings();renderFinance()}};
-  const observer=new MutationObserver(async()=>{if(ready()){await loadPatients();await loadSettings();renderFinance()}});
+  carregar=async function(){await originalCarregar();if(ready()){await loadPatients();await loadSettings()}};
+  const observer=new MutationObserver(async()=>{if(ready()){await loadPatients();await loadSettings()}});
   observer.observe($x('app'),{attributes:true,attributeFilter:['hidden']});
   $x('form-consulta').elements.valor.value=defaultConsultValue();
-  window.addEventListener('focus',()=>{if(ready())renderFinance()});
 })();
