@@ -56,7 +56,15 @@
       return (current&&t===current)||(!current&&normS(x.nome)===normS(consultaAtual.nome));
     }).sort((a,b)=>(b.data+String(b.hora)).localeCompare(a.data+String(a.hora)));
     if(!rel.length){$s('sessao-historico-lista').innerHTML='<p class="mut">Nenhuma outra sessão encontrada.</p>';return}
-    if(demoOn){$s('sessao-historico-lista').innerHTML=rel.filter(x=>String(x.id)!==String(consultaAtual.id)).map(x=>'<div class="sessao-historico-item"><b>'+safeS(dateS(x.data))+'</b><p class="mut">'+safeS(String(x.hora||'').slice(0,5))+' · '+safeS(x.modalidade||'')+'</p></div>').join('')||'<p class="mut">Este é o primeiro registro de sessão deste paciente.</p>';return}
+    if(demoOn){
+      const anteriores=rel.filter(x=>String(x.id)!==String(consultaAtual.id));
+      $s('sessao-historico-lista').innerHTML=anteriores.map(x=>{
+        const n=x._anotacao;
+        return '<details class="sessao-historico-item"><summary><b>'+safeS(dateS(x.data))+'</b><span class="mut">'+safeS(String(x.hora||'').slice(0,5))+' · '+(n?'Exemplo preenchido':'Sem anotação')+'</span></summary>'+
+          (n?'<p><b>Humor:</b> '+safeS(n.humor||'Não registrado')+'</p><p><b>Temas:</b> '+safeS(n.temas||'Não registrados')+'</p><p>'+safeS(n.conteudo||'')+'</p>'+(n.intervencoes?'<p><b>Intervenções:</b> '+safeS(n.intervencoes)+'</p>':'')+(n.tarefas?'<p><b>Combinados:</b> '+safeS(n.tarefas)+'</p>':'')+(n.plano?'<p><b>Retomar:</b> '+safeS(n.plano)+'</p>':''):'<p class="mut">Esta consulta de demonstração não possui anotação de exemplo.</p>')+'</details>';
+      }).join('')||'<p class="mut">Este é o primeiro registro de sessão deste paciente.</p>';
+      return;
+    }
     const ids=rel.map(x=>x.id);
     const {data,error}=await sb.from('anotacoes_consultas').select('consulta_id,conteudo,humor,temas,intervencoes,tarefas,plano,atualizado_em').in('consulta_id',ids);
     if(error){$s('sessao-historico-lista').innerHTML='<p class="mut">Não foi possível carregar o histórico. Verifique se a migração da área de sessão foi aplicada.</p>';return}
