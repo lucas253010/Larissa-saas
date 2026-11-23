@@ -1,5 +1,6 @@
 -- Complemento da reorganização do prontuário: informações gerais por paciente.
 -- Execute uma única vez no Supabase SQL Editor, após a migração supabase-melhorias.sql.
+
 create table if not exists public.anotacoes_pacientes (
   id uuid primary key default gen_random_uuid(),
   paciente_id uuid not null unique references public.pacientes(id) on delete cascade,
@@ -17,15 +18,31 @@ create policy "dona edita anotacoes pacientes" on public.anotacoes_pacientes for
 grant select,insert,update on public.anotacoes_pacientes to authenticated;
 revoke all on public.anotacoes_pacientes from anon;
 
--- Associa consultas antigas aos cadastros existentes pelo telefone ou, na ausência dele, pelo nome.
+-- Cria cadastros para pacientes que só existiam nas consultas antigas.
+insert into public.pacientes (nome, whatsapp)
+select c.nome, nullif(c.whatsapp,'')
+from public.consultas c
+where nullif(trim(c.nome),'') is not null
+  and not exists (
+    select 1 from public.pacientes p
+    where (
+      nullif(regexp_replace(coalesce(c.whatsapp,''),'[^0-9]','','g'),'') is not null
+      and regexp_replace(coalesce(p.whatsapp,''),'[^0-9]','','g')=regexp_replace(coalesce(c.whatsapp,''),'[^0-9]','','g')
+    ) or (
+      nullif(regexp_replace(coalesce(c.whatsapp,''),'[^0-9]','','g'),'') is null
+      and lower(trim(p.nome))=lower(trim(c.nome))
+    )
+  );
+
+-- Associa consultas antigas aos cadastros pelo telefone ou, sem telefone, pelo nome.
 update public.consultas c
 set paciente_id=p.id
 from public.pacientes p
 where c.paciente_id is null
   and (
-    (nullif(regexp_replace(coalesce(c.whatsapp,''),'\\D','','g'),'') is not null
-      and regexp_replace(coalesce(c.whatsapp,''),'\\D','','g')=regexp_replace(coalesce(p.whatsapp,''),'\\D','','g'))
+    (nullif(regexp_replace(coalesce(c.whatsapp,''),'[^0-9]','','g'),'') is not null
+      and regexp_replace(coalesce(c.whatsapp,''),'[^0-9]','','g')=regexp_replace(coalesce(p.whatsapp,''),'[^0-9]','','g'))
     or
-    (nullif(regexp_replace(coalesce(c.whatsapp,''),'\\D','','g'),'') is null
+    (nullif(regexp_replace(coalesce(c.whatsapp,''),'[^0-9]','','g'),'') is null
       and lower(trim(c.nome))=lower(trim(p.nome)))
   );
