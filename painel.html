@@ -599,6 +599,7 @@ function pacientes() {
                 ? `<span class="tag">${esc(r.presenca)}</span>`
                 : ''}
               ${ab('sessao',r.id,'Abrir sessão','hoje','ghost')}
+              <div class="pac-nota" data-nota-consulta="${esc(r.id)}"><span class="mut">Carregue o paciente para ver as anotações desta sessão.</span></div>
             </div>
           `).join('');
 
