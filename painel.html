@@ -254,21 +254,6 @@ summary .mut{font-weight:400;margin:0;font-size:14px}
     </form>
   </div>
 </section>
-<section class="card" id="p-prontuarios" hidden>
-  <h2>Prontuário do paciente</h2>
-  <p class="mut">Informações gerais do paciente e registros individuais de cada sessão, organizados por data.</p>
-  <div class="extra-card">
-    <label>Paciente<select id="nota-paciente"><option value="">Selecione um paciente</option></select></label>
-    <label>Informações gerais do paciente<textarea id="nota-paciente-texto" rows="5" placeholder="Informações gerais relevantes, histórico e observações contínuas..."></textarea></label>
-    <div class="extra-actions"><button class="ab pri" id="nota-paciente-salvar" type="button">Salvar informações do paciente</button><span class="mut" id="nota-paciente-msg" role="status"></span></div>
-    <div class="session-notes-heading"><h3>Anotações das sessões</h3><p class="mut">Selecione uma sessão para abrir ou registrar sua anotação.</p></div>
-    <label>Sessão<select id="nota-consulta"><option value="">Selecione uma sessão</option></select></label>
-    <label>Anotação desta sessão<textarea id="nota-texto" rows="9" placeholder="Assuntos abordados, observações, evolução e pontos importantes desta sessão..."></textarea></label>
-    <div class="extra-actions"><button class="ab pri" id="nota-salvar" type="button">Salvar anotação</button><span class="mut" id="nota-msg" role="status"></span></div>
-    <div id="nota-historico" class="note-history"></div>
-  </div>
-  <p class="security-note"><strong>Confidencial:</strong> estas anotações só devem ser preenchidas depois de aplicar a migração SQL e validar o acesso restrito no Supabase. Não use o modo de demonstração para registrar dados reais.</p>
-</section>
 <section class="card" id="p-financeiro" hidden>
   <h2>Relatórios financeiros</h2><p class="mut">Resumo por mês com valores recebidos, pendentes e quantidade de sessões.</p>
   <label>Mês de referência<input id="fin-mes" type="month"></label>
