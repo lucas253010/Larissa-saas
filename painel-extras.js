@@ -50,7 +50,7 @@
     const {data,error}=await sb.from('anotacoes_consultas').select('*').eq('consulta_id',id).maybeSingle();
     if(error){msg('nota-msg','Tabela de anotações indisponível. Aplique a migração SQL. '+error.message);return}
     if(data){noteId=data.id;$x('nota-texto').value=data.conteudo||''}
-    const {data:history,herror}=await sb.from('historico_anotacoes').select('*').eq('anotacao_id',noteId||'00000000-0000-0000-0000-000000000000').order('criado_em',{ascending:false}).limit(20);
+    const {data:history,error:herror}=await sb.from('historico_anotacoes').select('*').eq('anotacao_id',noteId||'00000000-0000-0000-0000-000000000000').order('criado_em',{ascending:false}).limit(20);
     if(herror){msg('nota-msg','Não foi possível carregar versões anteriores: '+herror.message);return}
     $x('nota-historico').innerHTML=(history||[]).map(v=>'<div class="note-version"><strong>Versão anterior · '+new Date(v.criado_em).toLocaleString('pt-BR')+'</strong><p>'+escx(v.conteudo)+'</p></div>').join('');
     msg('nota-msg',data?'Registro carregado.':'Ainda não há anotação para esta consulta.');
