@@ -165,16 +165,17 @@
     const ultima=notas[notas.length-1], media=(notas.reduce((a,b)=>a+b,0)/notas.length).toFixed(1).replace('.',',');
     const variacao=ultima-notas[0], variacaoTxt=variacao>0?'+'+variacao: String(variacao);
     const descricoes=['','Momento mais difícil','Pequenos avanços / desafios','Estável / em construção','Avanços percebidos','Avanços consistentes'];
-    resumo.innerHTML='<div class="sessao-evolucao-kpi destaque"><span>Última avaliação</span><strong>'+ultima+'<small>/5</small></strong><em>'+descricoes[ultima]+'</em></div>'+
-      '<div class="sessao-evolucao-kpi"><span>Média registrada</span><strong>'+media+'<small>/5</small></strong><em>Nas avaliações preenchidas</em></div>'+
-      '<div class="sessao-evolucao-kpi"><span>Variação no período</span><strong>'+variacaoTxt+'</strong><em>Da primeira à última nota</em></div>'+
-      '<div class="sessao-evolucao-kpi"><span>Avaliações</span><strong>'+pontos.length+'</strong><em> Sessões avaliadas</em></div>';
+    const tendenciaIcon=variacao>0?'↗':variacao<0?'↘':'→';
+    resumo.innerHTML='<div class="sessao-evolucao-kpi destaque"><span>✦ Última avaliação</span><strong>'+ultima+'<small>/5</small></strong><em>'+descricoes[ultima]+'</em></div>'+
+      '<div class="sessao-evolucao-kpi"><span>◉ Média registrada</span><strong>'+media+'<small>/5</small></strong><em>Nas avaliações preenchidas</em></div>'+
+      '<div class="sessao-evolucao-kpi"><span>'+tendenciaIcon+' Variação</span><strong>'+variacaoTxt+'</strong><em>Da primeira à última nota</em></div>'+
+      '<div class="sessao-evolucao-kpi"><span>▤ Avaliações</span><strong>'+pontos.length+'</strong><em>Sessões avaliadas</em></div>';
     if(!window.Chart)return;
     const datas=pontos.map(x=>new Date(x.r.data+'T12:00:00'));
     const rotulos=notas.map(n=>descricoes[n]);
     graficoEvolucao=new Chart(canvas,{type:'line',data:{
       labels:datas.map(d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})),
-      datasets:[{label:'Percepção clínica',data:notas,borderColor:'#98634f',backgroundColor:'rgba(163,109,85,.13)',fill:true,tension:.36,borderWidth:3,pointRadius:5,pointHoverRadius:8,pointHitRadius:14,pointBackgroundColor:'#fffaf6',pointBorderColor:'#98634f',pointBorderWidth:2,pointHoverBackgroundColor:'#98634f',pointHoverBorderColor:'#fff',pointHoverBorderWidth:3}]
+      datasets:[{label:'Percepção clínica',data:notas,borderColor:'#98634f',backgroundColor:'rgba(163,109,85,.13)',fill:true,tension:.36,borderWidth:3,pointRadius:ctx=>ctx.dataIndex===notas.length-1?7:5,pointHoverRadius:10,pointHitRadius:16,pointStyle:ctx=>['triangle','rectRot','circle','rectRounded','star'][Math.max(0,Math.min(4,Number(ctx.raw)-1))],pointBackgroundColor:ctx=>ctx.dataIndex===notas.length-1?'#98634f':'#fffaf6',pointBorderColor:'#98634f',pointBorderWidth:2,pointHoverBackgroundColor:'#98634f',pointHoverBorderColor:'#fff',pointHoverBorderWidth:3}]
     },options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'nearest',axis:'x',intersect:false},
@@ -184,7 +185,7 @@
         legend:{display:false},
         tooltip:{displayColors:false,backgroundColor:'#38241d',titleColor:'#fffaf6',bodyColor:'#fffaf6',padding:12,cornerRadius:10,callbacks:{
           title:items=>{const d=datas[items[0].dataIndex];return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})+' · Sessão '+(items[0].dataIndex+1)},
-          label:c=>'Nota '+c.parsed.y+'/5 · '+rotulos[c.dataIndex]
+          label:c=>['△','◇','●','▣','★'][c.parsed.y-1]+' Nota '+c.parsed.y+'/5 · '+rotulos[c.dataIndex]
         }}
       },
       scales:{
