@@ -82,17 +82,53 @@
   }
   function renderEvolucao(rel, anotacoes){
     const canvas=$s('sessao-grafico'), vazio=$s('sessao-evolucao-vazio');
-    if(!canvas||!window.Chart)return;
+    if(!canvas||!vazio)return;
     const pontos=(rel||[]).map(r=>({r,n:anotacoes instanceof Map?anotacoes.get(String(r.id)):null}))
       .filter(x=>x.n&&Number(x.n.evolucao_nota)>=1&&Number(x.n.evolucao_nota)<=5)
       .sort((a,b)=>(a.r.data+String(a.r.hora)).localeCompare(b.r.data+String(b.r.hora)));
     if(graficoEvolucao){graficoEvolucao.destroy();graficoEvolucao=null;}
+    const area=canvas.closest('.sessao-evolucao');
+    let resumo=$s('sessao-evolucao-resumo');
+    if(!resumo){
+      resumo=document.createElement('div');resumo.id='sessao-evolucao-resumo';
+      resumo.className='sessao-evolucao-resumo';
+      const head=area.querySelector('.sessao-evolucao-head');
+      head.insertAdjacentElement('afterend',resumo);
+    }
     vazio.hidden=!!pontos.length; canvas.parentElement.hidden=!pontos.length;
-    if(!pontos.length)return;
+    resumo.hidden=!pontos.length;
+    if(!pontos.length){resumo.innerHTML='';return;}
+    const notas=pontos.map(x=>Number(x.n.evolucao_nota));
+    const ultima=notas[notas.length-1], media=(notas.reduce((a,b)=>a+b,0)/notas.length).toFixed(1).replace('.',',');
+    const variacao=ultima-notas[0], variacaoTxt=variacao>0?'+'+variacao: String(variacao);
+    const descricoes=['','Momento mais difícil','Pequenos avanços / desafios','Estável / em construção','Avanços percebidos','Avanços consistentes'];
+    resumo.innerHTML='<div class="sessao-evolucao-kpi destaque"><span>Última avaliação</span><strong>'+ultima+'<small>/5</small></strong><em>'+descricoes[ultima]+'</em></div>'+
+      '<div class="sessao-evolucao-kpi"><span>Média registrada</span><strong>'+media+'<small>/5</small></strong><em>Nas avaliações preenchidas</em></div>'+
+      '<div class="sessao-evolucao-kpi"><span>Variação no período</span><strong>'+variacaoTxt+'</strong><em>Da primeira à última nota</em></div>'+
+      '<div class="sessao-evolucao-kpi"><span>Avaliações</span><strong>'+pontos.length+'</strong><em> Sessões avaliadas</em></div>';
+    if(!window.Chart)return;
+    const datas=pontos.map(x=>new Date(x.r.data+'T12:00:00'));
+    const rotulos=notas.map(n=>descricoes[n]);
     graficoEvolucao=new Chart(canvas,{type:'line',data:{
-      labels:pontos.map(x=>new Date(x.r.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})),
-      datasets:[{label:'Evolução registrada',data:pontos.map(x=>Number(x.n.evolucao_nota)),borderColor:'#a36d55',backgroundColor:'rgba(163,109,85,.14)',fill:true,tension:.28,pointRadius:4,pointHoverRadius:6}]
-    },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>['','1 · Momento mais difícil','2 · Pequenos avanços / desafios','3 · Estável / em construção','4 · Avanços percebidos','5 · Avanços consistentes'][c.parsed.y]||String(c.parsed.y)}}},scales:{y:{min:1,max:5,ticks:{stepSize:1}},x:{grid:{display:false},ticks:{autoSkip:true,maxTicksLimit:6,minRotation:35,maxRotation:45}}}}});
+      labels:datas.map(d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})),
+      datasets:[{label:'Percepção clínica',data:notas,borderColor:'#98634f',backgroundColor:'rgba(163,109,85,.13)',fill:true,tension:.36,borderWidth:3,pointRadius:5,pointHoverRadius:8,pointHitRadius:14,pointBackgroundColor:'#fffaf6',pointBorderColor:'#98634f',pointBorderWidth:2,pointHoverBackgroundColor:'#98634f',pointHoverBorderColor:'#fff',pointHoverBorderWidth:3}]
+    },options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'nearest',axis:'x',intersect:false},
+      animation:{duration:650,easing:'easeOutQuart'},
+      layout:{padding:{top:12,right:12,bottom:2,left:4}},
+      plugins:{
+        legend:{display:false},
+        tooltip:{displayColors:false,backgroundColor:'#38241d',titleColor:'#fffaf6',bodyColor:'#fffaf6',padding:12,cornerRadius:10,callbacks:{
+          title:items=>{const d=datas[items[0].dataIndex];return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})+' · Sessão '+(items[0].dataIndex+1)},
+          label:c=>'Nota '+c.parsed.y+'/5 · '+rotulos[c.dataIndex]
+        }}
+      },
+      scales:{
+        y:{min:1,max:5,grid:{color:'rgba(128,107,97,.13)',drawBorder:false},border:{display:false},ticks:{stepSize:1,color:'#806b61',padding:9,font:{size:11},callback:v=>v+'/5'}},
+        x:{grid:{display:false},border:{display:false},ticks:{autoSkip:true,maxTicksLimit:6,minRotation:0,maxRotation:0,color:'#806b61',padding:8,font:{size:11}}}
+      }
+    }});
   }
   async function openSession(id){
     const r=(dados()||[]).find(x=>String(x.id)===String(id));
