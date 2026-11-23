@@ -90,7 +90,7 @@
     if(demoOn){
       anotacaoAtual=r._anotacao||null;
       fillForm(anotacaoAtual);
-      setMsg(anotacaoAtual?'Rascunho de demonstração':'Modo de demonstração · não salva no banco');
+      setMsg(anotacaoAtual?'Exemplo fictício · não salvo no banco':'Modo de demonstração · não salva no banco');
       await loadHistory();
       return;
     }
@@ -132,7 +132,7 @@
       const map=new Map((dados()||[]).map(r=>[String(r.id),r._anotacao||null]));
       nodes.forEach(n=>{
         const a=map.get(String(n.dataset.notaConsulta));
-        n.innerHTML=a?'<b>Anotação da sessão</b><p>'+safeS(a.conteudo||'')+'</p>'+(a.intervencoes?'<p><b>Intervenções:</b> '+safeS(a.intervencoes)+'</p>':'')+(a.plano?'<p><b>Próximos passos:</b> '+safeS(a.plano)+'</p>':''):'<span class="mut">Nenhuma anotação salva nesta consulta.</span>';
+        n.innerHTML=a?'<b>Exemplo fictício · anotação da sessão</b><p>'+safeS(a.conteudo||'')+'</p>'+(a.intervencoes?'<p><b>Intervenções:</b> '+safeS(a.intervencoes)+'</p>':'')+(a.plano?'<p><b>Próximos passos:</b> '+safeS(a.plano)+'</p>':''):'<span class="mut">Nenhuma anotação salva nesta consulta.</span>';
       });
       return;
     }
