@@ -1,6 +1,6 @@
 /* Módulos adicionais do painel Larissa. Requer supabase-melhorias.sql. */
 (()=>{
-  const $x=id=>document.getElementById(id), extras=['cadastro','configuracoes'];
+  const $x=id=>document.getElementById(id), extras=['cadastro','configuracoes','sessao'];
   let patients=[], settings=null;
   const escx=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const msg=(id,t)=>{const e=$x(id);if(e)e.textContent=t||''};
