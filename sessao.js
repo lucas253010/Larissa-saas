@@ -46,7 +46,10 @@
       const linhas=texto.slice(prefixo.length).split('\n');
       linhas.forEach(linha=>{
         if(linha.startsWith('Complemento: ')){field('intervencoes_manual').value=linha.slice(13);return;}
-        linha.split(';').map(v=>v.trim()).filter(Boolean).forEach(v=>{
+        // Compatibilidade com registros criados no seletor anterior, que salvava categorias.
+        const pos=linha.indexOf(': ');
+        const itens=(pos>=0?linha.slice(pos+2):linha).split(';').map(v=>v.trim()).filter(Boolean);
+        itens.forEach(v=>{
           if(estrategiasDisponiveis.includes(v)&&!estrategiasMarcadas.includes(v))estrategiasMarcadas.push(v);
           else if(v)field('intervencoes_manual').value+=(field('intervencoes_manual').value?'\n':'')+v;
         });
