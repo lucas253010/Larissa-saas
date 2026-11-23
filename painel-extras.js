@@ -21,9 +21,11 @@
     sel.innerHTML='<option value="">Selecione um paciente</option>'+patients.map(p=>'<option value="'+escx(p.id)+'">'+escx(p.nome)+'</option>').join('');
     await loadConsultOptions();
   }
+  const defaultConsultValue=()=>Number(settings?.valor??CFG.VALOR??180);
   async function loadConsultOptions(){
-    const hora=$x('form-consulta').elements.hora;
+    const f=$x('form-consulta'),hora=f.elements.hora;
     hora.innerHTML=(CFG.HORAS||[]).map(h=>'<option>'+escx(h)+'</option>').join('');
+    if(!f.elements.valor.dataset.userEdited)f.elements.valor.value=defaultConsultValue();
   }
   async function loadSettings(){
     const {data,error}=await sb.from('configuracoes_painel').select('*').eq('id',1).maybeSingle();
@@ -32,7 +34,8 @@
     const f=$x('form-config');
     f.elements.nome.value=settings.nome||CFG.NOME||'';
     f.elements.crp.value=settings.crp||CFG.CRP||'';
-    f.elements.valor.value=settings.valor??CFG.VALOR??180;
+    f.elements.valor.value=defaultConsultValue();
+    delete $x('form-consulta').elements.valor.dataset.userEdited;
     f.elements.duracao.value=settings.duracao_minutos||50;
     f.elements.horas.value=(settings.horas||CFG.HORAS||[]).join('\n');
     f.querySelectorAll('[name="dias"]').forEach(c=>c.checked=(settings.dias_atendimento||CFG.DIAS_ATENDIMENTO||[1,2,3,4,5]).includes(Number(c.value)));
@@ -44,12 +47,13 @@
     if(error)return msg('pac-msg','Não foi possível salvar: '+error.message);
     f.reset();msg('pac-msg','Paciente cadastrado.');await loadPatients();
   });
+  $x('form-consulta').elements.valor.addEventListener('input',e=>{e.currentTarget.dataset.userEdited='true'});
   $x('form-consulta').addEventListener('submit',async e=>{
     e.preventDefault();const f=e.currentTarget,p=patients.find(x=>x.id===f.elements.paciente_id.value);if(!p)return msg('cons-msg','Selecione um paciente.');
-    const payload={paciente_id:p.id,data:f.elements.data.value,hora:f.elements.hora.value,nome:p.nome,whatsapp:p.whatsapp,modalidade:f.elements.modalidade.value,status:f.elements.status.value,valor:Number(f.elements.valor.value||CFG.VALOR||180),pago:false};
+    const payload={paciente_id:p.id,data:f.elements.data.value,hora:f.elements.hora.value,nome:p.nome,whatsapp:p.whatsapp,modalidade:f.elements.modalidade.value,status:f.elements.status.value,valor:Number(f.elements.valor.value||defaultConsultValue()),pago:false};
     const {error}=await sb.from('consultas').insert(payload);
     if(error)return msg('cons-msg','Não foi possível criar a consulta: '+error.message);
-    f.reset();f.elements.valor.value=CFG.VALOR||180;msg('cons-msg','Consulta criada.');await loadConsultOptions();await carregar();
+    f.reset();delete f.elements.valor.dataset.userEdited;f.elements.valor.value=defaultConsultValue();msg('cons-msg','Consulta criada.');await loadConsultOptions();await carregar();
   });
   $x('form-config').addEventListener('submit',async e=>{
     e.preventDefault();const f=e.currentTarget;
@@ -58,7 +62,10 @@
     const payload={id:1,nome:f.elements.nome.value.trim(),crp:f.elements.crp.value.trim(),valor:Number(f.elements.valor.value),duracao_minutos:Number(f.elements.duracao.value||50),horas,dias_atendimento:[...f.querySelectorAll('[name="dias"]:checked')].map(x=>Number(x.value)),atualizado_em:new Date().toISOString()};
     const {error}=await sb.from('configuracoes_painel').upsert(payload);
     if(error)return msg('config-msg','Erro ao salvar configurações: '+error.message);
-    msg('config-msg','Configurações salvas no painel. A agenda pública ainda precisa de sincronização em config.js.');
+    settings=payload;
+    const valorConsulta=$x('form-consulta').elements.valor;
+    if(!valorConsulta.dataset.userEdited)valorConsulta.value=defaultConsultValue();
+    msg('config-msg','Configurações salvas. Novas consultas usarão '+brlx(payload.valor)+' como valor padrão. A agenda pública ainda usa config.js.');
   });
   const renderFinance=()=>{
     const m=$x('fin-mes').value||dateNow().slice(0,7),list=(rows||[]).filter(r=>String(r.data).slice(0,7)===m&&r.status!=='Cancelada');
@@ -76,6 +83,6 @@
   carregar=async function(){await originalCarregar();if(ready()){await loadPatients();await loadSettings();renderFinance()}};
   const observer=new MutationObserver(async()=>{if(ready()){await loadPatients();await loadSettings();renderFinance()}});
   observer.observe($x('app'),{attributes:true,attributeFilter:['hidden']});
-  $x('form-consulta').elements.valor.value=CFG.VALOR||180;
+  $x('form-consulta').elements.valor.value=defaultConsultValue();
   window.addEventListener('focus',()=>{if(ready())renderFinance()});
 })();
