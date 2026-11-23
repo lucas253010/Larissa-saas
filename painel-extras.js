@@ -1,7 +1,7 @@
 /* Módulos adicionais do painel Larissa. Requer supabase-melhorias.sql. */
 (()=>{
-  const $x=id=>document.getElementById(id), extras=['cadastro','prontuarios','financeiro','configuracoes'];
-  let patients=[], selectedNote=null, noteId=null, settings=null;
+  const $x=id=>document.getElementById(id), extras=['cadastro','financeiro','configuracoes'];
+  let patients=[], settings=null;
   const escx=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const msg=(id,t)=>{const e=$x(id);if(e)e.textContent=t||''};
   const dateNow=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
@@ -21,31 +21,9 @@
     sel.innerHTML='<option value="">Selecione um paciente</option>'+patients.map(p=>'<option value="'+escx(p.id)+'">'+escx(p.nome)+'</option>').join('');
     await loadConsultOptions();
   }
-  let consultRows=[];
   async function loadConsultOptions(){
-    const {data,error}=await sb.from('consultas').select('id,data,hora,nome,status,paciente_id').order('data',{ascending:false}).order('hora',{ascending:false}).limit(1000);
-    if(error){msg('nota-msg','Não foi possível carregar sessões: '+error.message);return}
-    consultRows=data||[];
-    const psel=$x('nota-paciente');
-    psel.innerHTML='<option value="">Selecione um paciente</option>'+patients.map(p=>'<option value="'+escx(p.id)+'">'+escx(p.nome)+'</option>').join('');
     const hora=$x('form-consulta').elements.hora;
     hora.innerHTML=(CFG.HORAS||[]).map(h=>'<option>'+escx(h)+'</option>').join('');
-  }
-  async function filterPatientSessions(patientId){
-    const patient=patients.find(p=>p.id===patientId);
-    const list=consultRows.filter(r=>r.paciente_id===patientId || (patient && r.nome===patient.nome));
-    $x('nota-consulta').innerHTML='<option value="">Selecione uma sessão</option>'+list.map(r=>'<option value="'+escx(r.id)+'">'+escx(new Date(r.data+'T12:00').toLocaleDateString('pt-BR'))+' · '+escx(String(r.hora).slice(0,5))+' · '+escx(r.status||'')+'</option>').join('');
-    $x('nota-consulta').value='';
-    await loadPatientNote(patientId);
-    await loadNote('');
-  }
-  async function loadPatientNote(patientId){
-    const area=$x('nota-paciente-texto');area.value='';
-    if(!patientId)return;
-    const {data,error}=await sb.from('anotacoes_pacientes').select('*').eq('paciente_id',patientId).maybeSingle();
-    if(error){msg('nota-paciente-msg','Não foi possível carregar as informações: '+error.message);return}
-    area.value=data?.conteudo||'';
-    msg('nota-paciente-msg',data?'Informações gerais carregadas.':'Ainda não há informações gerais salvas.');
   }
   async function loadSettings(){
     const {data,error}=await sb.from('configuracoes_painel').select('*').eq('id',1).maybeSingle();
@@ -59,41 +37,6 @@
     f.elements.horas.value=(settings.horas||CFG.HORAS||[]).join('\n');
     f.querySelectorAll('[name="dias"]').forEach(c=>c.checked=(settings.dias_atendimento||CFG.DIAS_ATENDIMENTO||[1,2,3,4,5]).includes(Number(c.value)));
   }
-  let patientNoteId=null;
-  $x('nota-paciente').addEventListener('change',e=>filterPatientSessions(e.target.value));
-  $x('nota-paciente-salvar').addEventListener('click',async()=>{
-    const patientId=$x('nota-paciente').value;
-    if(!patientId)return msg('nota-paciente-msg','Selecione um paciente.');
-    const conteudo=$x('nota-paciente-texto').value.trim();
-    const {data:existing,error:readError}=await sb.from('anotacoes_pacientes').select('id').eq('paciente_id',patientId).maybeSingle();
-    if(readError)return msg('nota-paciente-msg','Erro ao consultar: '+readError.message);
-    const result=existing
-      ? await sb.from('anotacoes_pacientes').update({conteudo,atualizado_em:new Date().toISOString()}).eq('paciente_id',patientId)
-      : await sb.from('anotacoes_pacientes').insert({paciente_id:patientId,conteudo});
-    if(result.error)return msg('nota-paciente-msg','Erro ao salvar: '+result.error.message);
-    msg('nota-paciente-msg','Informações gerais salvas.');
-  });
-  async function loadNote(id){
-    selectedNote=id;noteId=null;$x('nota-texto').value='';$x('nota-historico').innerHTML='';
-    if(!id)return;
-    const {data,error}=await sb.from('anotacoes_consultas').select('*').eq('consulta_id',id).maybeSingle();
-    if(error){msg('nota-msg','Tabela de anotações indisponível. Aplique a migração SQL. '+error.message);return}
-    if(data){noteId=data.id;$x('nota-texto').value=data.conteudo||''}
-    const {data:history,error:herror}=await sb.from('historico_anotacoes').select('*').eq('anotacao_id',noteId||'00000000-0000-0000-0000-000000000000').order('criado_em',{ascending:false}).limit(20);
-    if(herror){msg('nota-msg','Não foi possível carregar versões anteriores: '+herror.message);return}
-    $x('nota-historico').innerHTML=(history||[]).map(v=>'<div class="note-version"><strong>Versão anterior · '+new Date(v.criado_em).toLocaleString('pt-BR')+'</strong><p>'+escx(v.conteudo)+'</p></div>').join('');
-    msg('nota-msg',data?'Registro carregado.':'Ainda não há anotação para esta consulta.');
-  }
-  $x('nota-consulta').addEventListener('change',e=>loadNote(e.target.value));
-  $x('nota-salvar').addEventListener('click',async()=>{
-    if(!selectedNote)return msg('nota-msg','Selecione uma consulta.');
-    const conteudo=$x('nota-texto').value.trim();if(!conteudo)return msg('nota-msg','Escreva a anotação antes de salvar.');
-    const payload={consulta_id:selectedNote,conteudo};
-    const result=noteId?await sb.from('anotacoes_consultas').update({conteudo,atualizado_em:new Date().toISOString()}).eq('id',noteId).select().single():await sb.from('anotacoes_consultas').insert(payload).select().single();
-    if(result.error)return msg('nota-msg','Erro ao salvar. Verifique a migração e as permissões: '+result.error.message);
-    noteId=result.data.id;msg('nota-msg','Anotação salva com segurança em '+new Date().toLocaleString('pt-BR')+'.');
-    await loadNote(selectedNote);
-  });
   $x('form-paciente').addEventListener('submit',async e=>{
     e.preventDefault();const f=e.currentTarget;
     const payload={nome:f.elements.nome.value.trim(),whatsapp:f.elements.whatsapp.value.trim()||null,email:f.elements.email.value.trim()||null};
