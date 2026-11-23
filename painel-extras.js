@@ -7,10 +7,7 @@
   const dateNow=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
   const brlx=n=>'R$ '+Number(n||0).toFixed(2).replace('.',',');
   const showTab=(key)=>{['hoje','novas','prox','cob','pac','blq',...extras].forEach(k=>{const p=$x('p-'+k);if(p)p.hidden=k!==key});document.querySelectorAll('.tab[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===key)));};
-  try{
-    TABS.push(['cadastro','Cadastro','users',''],['prontuarios','Prontuários','receipt',''],['financeiro','Financeiro','wallet',''],['configuracoes','Configurações','lock','']);
-    montaTabs();
-  }catch(e){console.warn('Não foi possível adicionar as abas extras.',e)}
+  try{montaTabs()}catch(e){console.warn('Não foi possível montar a navegação.',e)}
   document.addEventListener('click',e=>{
     const t=e.target.closest('[data-tab]');
     if(t){if(extras.includes(t.dataset.tab))showTab(t.dataset.tab);else extras.forEach(k=>{const p=$x('p-'+k);if(p)p.hidden=true});}
@@ -24,13 +21,31 @@
     sel.innerHTML='<option value="">Selecione um paciente</option>'+patients.map(p=>'<option value="'+escx(p.id)+'">'+escx(p.nome)+'</option>').join('');
     await loadConsultOptions();
   }
+  let consultRows=[];
   async function loadConsultOptions(){
-    const sel=$x('nota-consulta');
-    const {data,error}=await sb.from('consultas').select('id,data,hora,nome,status').order('data',{ascending:false}).order('hora',{ascending:false}).limit(500);
-    if(error){msg('nota-msg','Não foi possível carregar consultas: '+error.message);return}
-    sel.innerHTML='<option value="">Selecione uma consulta</option>'+(data||[]).map(r=>'<option value="'+escx(r.id)+'">'+escx(r.data)+' · '+escx(String(r.hora).slice(0,5))+' · '+escx(r.nome)+' · '+escx(r.status)+'</option>').join('');
+    const {data,error}=await sb.from('consultas').select('id,data,hora,nome,status,paciente_id').order('data',{ascending:false}).order('hora',{ascending:false}).limit(1000);
+    if(error){msg('nota-msg','Não foi possível carregar sessões: '+error.message);return}
+    consultRows=data||[];
+    const psel=$x('nota-paciente');
+    psel.innerHTML='<option value="">Selecione um paciente</option>'+patients.map(p=>'<option value="'+escx(p.id)+'">'+escx(p.nome)+'</option>').join('');
     const hora=$x('form-consulta').elements.hora;
     hora.innerHTML=(CFG.HORAS||[]).map(h=>'<option>'+escx(h)+'</option>').join('');
+  }
+  async function filterPatientSessions(patientId){
+    const patient=patients.find(p=>p.id===patientId);
+    const list=consultRows.filter(r=>r.paciente_id===patientId || (patient && r.nome===patient.nome));
+    $x('nota-consulta').innerHTML='<option value="">Selecione uma sessão</option>'+list.map(r=>'<option value="'+escx(r.id)+'">'+escx(new Date(r.data+'T12:00').toLocaleDateString('pt-BR'))+' · '+escx(String(r.hora).slice(0,5))+' · '+escx(r.status||'')+'</option>').join('');
+    $x('nota-consulta').value='';
+    await loadPatientNote(patientId);
+    await loadNote('');
+  }
+  async function loadPatientNote(patientId){
+    const area=$x('nota-paciente-texto');area.value='';
+    if(!patientId)return;
+    const {data,error}=await sb.from('anotacoes_pacientes').select('*').eq('paciente_id',patientId).maybeSingle();
+    if(error){msg('nota-paciente-msg','Não foi possível carregar as informações: '+error.message);return}
+    area.value=data?.conteudo||'';
+    msg('nota-paciente-msg',data?'Informações gerais carregadas.':'Ainda não há informações gerais salvas.');
   }
   async function loadSettings(){
     const {data,error}=await sb.from('configuracoes_painel').select('*').eq('id',1).maybeSingle();
@@ -44,6 +59,20 @@
     f.elements.horas.value=(settings.horas||CFG.HORAS||[]).join('\n');
     f.querySelectorAll('[name="dias"]').forEach(c=>c.checked=(settings.dias_atendimento||CFG.DIAS_ATENDIMENTO||[1,2,3,4,5]).includes(Number(c.value)));
   }
+  let patientNoteId=null;
+  $x('nota-paciente').addEventListener('change',e=>filterPatientSessions(e.target.value));
+  $x('nota-paciente-salvar').addEventListener('click',async()=>{
+    const patientId=$x('nota-paciente').value;
+    if(!patientId)return msg('nota-paciente-msg','Selecione um paciente.');
+    const conteudo=$x('nota-paciente-texto').value.trim();
+    const {data:existing,error:readError}=await sb.from('anotacoes_pacientes').select('id').eq('paciente_id',patientId).maybeSingle();
+    if(readError)return msg('nota-paciente-msg','Erro ao consultar: '+readError.message);
+    const result=existing
+      ? await sb.from('anotacoes_pacientes').update({conteudo,atualizado_em:new Date().toISOString()}).eq('paciente_id',patientId)
+      : await sb.from('anotacoes_pacientes').insert({paciente_id:patientId,conteudo});
+    if(result.error)return msg('nota-paciente-msg','Erro ao salvar: '+result.error.message);
+    msg('nota-paciente-msg','Informações gerais salvas.');
+  });
   async function loadNote(id){
     selectedNote=id;noteId=null;$x('nota-texto').value='';$x('nota-historico').innerHTML='';
     if(!id)return;

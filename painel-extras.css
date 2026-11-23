@@ -21,3 +21,23 @@
 #p-configuracoes legend{font-weight:600;color:#806b61}
 #p-financeiro #fin-lista .row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 @media(max-width:650px){.extra-grid,.extra-grid.two,.extra-grid.three{grid-template-columns:1fr}.extra-card{padding:14px}.extra-actions .ab{width:100%}}
+
+/* Navegação e prontuário reorganizados */
+#app .tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;overflow:visible;padding:8px 0 16px;margin:10px 0 14px;border-bottom:1px solid #ead9cc}
+#app .tab{justify-content:center;min-width:0;border-radius:12px;padding:12px 10px;font-size:14px;white-space:nowrap}
+#app .tab .ic{width:17px;height:17px}
+#app .tab[aria-selected=true]{box-shadow:none}
+#app .tabs .tab[data-tab="novas"],#app .tabs .tab[data-tab="cob"],#app .tabs .tab[data-tab="blq"],#app .tabs .tab[data-tab="cadastro"]{display:none}
+#app .session-notes-heading{margin:18px 0 4px;padding-top:14px;border-top:1px solid #ead9cc}
+#app .session-notes-heading h3{margin:0 0 4px;color:#38241d}
+#app .session-notes-heading p{margin:0}
+#app #p-prontuarios .extra-card{gap:14px}
+#app #nota-texto,#app #nota-paciente-texto{min-height:130px}
+@media(max-width:760px){#app .tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}#app .tab{font-size:13px;padding:10px 6px;white-space:normal}}
+@media(max-width:420px){#app .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+#app .quick-links{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:-6px 0 18px;padding:0 2px}
+#app .quick-links button{appearance:none;border:0;background:transparent;color:#8b6a5c;font:600 12px Figtree,system-ui,sans-serif;padding:6px 9px;border-radius:8px;cursor:pointer}
+#app .quick-links button:hover{background:#f1e2d6;color:#8d4935}
+#app .quick-links button:focus-visible{outline:2px solid #a64f38;outline-offset:2px}
+@media(max-width:560px){#app .quick-links{gap:4px}#app .quick-links button{font-size:11px;padding:6px}}
