@@ -105,6 +105,7 @@
     anotacaoAtual=data;setMsg('Salvo em '+new Date(data.atualizado_em||data.criado_em).toLocaleString('pt-BR'));
     $s('sessao-status').textContent='Registro salvo';
     await loadHistory();
+    document.querySelectorAll('details[data-k][open]').forEach(d=>loadPatientNotes(d));
   });
   $s('sessao-limpar').addEventListener('click',()=>{
     if(!confirm('Limpar os campos desta tela? O que já foi salvo no banco não será apagado.'))return;
