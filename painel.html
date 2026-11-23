@@ -239,12 +239,14 @@ summary .mut{font-weight:400;margin:0;font-size:14px}
 <section class="card" id="p-sessao" hidden>
   <div class="sessao-head"><div><span class="sessao-eyebrow">ESPAÇO DE ATENDIMENTO</span><h2 id="sessao-titulo">Sessão clínica</h2><p class="mut" id="sessao-subtitulo">Selecione uma consulta na agenda ou no histórico do paciente.</p></div><span class="sessao-status" id="sessao-status">Não iniciado</span></div>
   <div id="sessao-paciente" class="sessao-paciente"><p class="mut">Os dados do paciente aparecerão aqui quando você abrir uma sessão.</p></div>
+  <div class="sessao-evolucao"><div class="sessao-evolucao-head"><div><h3>Evolução do paciente</h3><p class="mut">Acompanhamento ao longo das sessões, com base na avaliação registrada pela profissional.</p></div><span class="sessao-evolucao-legenda">Escala: 1 a 5</span></div><div class="sessao-grafico-wrap"><canvas id="sessao-grafico" role="img" aria-label="Gráfico de evolução registrada nas sessões"></canvas></div><p id="sessao-evolucao-vazio" class="mut" hidden>A evolução aparecerá aqui conforme as avaliações forem registradas.</p></div>
   <form id="form-sessao" class="sessao-form">
     <input type="hidden" name="consulta_id">
     <div class="sessao-toolbar"><div><b>Registro clínico</b><small>As informações são privadas e vinculadas a esta consulta.</small></div><span id="sessao-salvo" class="mut" role="status">Ainda não salvo</span></div>
     <div class="sessao-fields">
       <label>Humor / estado emocional observado<select name="humor"><option value="">Não registrado</option><option>Tranquilo</option><option>Ansioso</option><option>Triste</option><option>Irritado</option><option>Desanimado</option><option>Estável</option><option>Variável</option><option>Outro / não especificado</option></select></label>
       <label>Temas trabalhados<input name="temas" maxlength="500" placeholder="Ex.: relações, trabalho, autoestima..."></label>
+      <label>Percepção clínica de evolução<select name="evolucao_nota"><option value="">Não avaliado</option><option value="1">1 · Momento mais difícil</option><option value="2">2 · Pequenos avanços / desafios</option><option value="3">3 · Estável / em construção</option><option value="4">4 · Avanços percebidos</option><option value="5">5 · Avanços consistentes</option></select></label>
       <label class="wide">Evolução e anotações da sessão<textarea name="conteudo" rows="7" placeholder="Registre de forma objetiva os pontos relevantes, falas importantes e evolução observada..."></textarea></label>
       <label>Intervenções / estratégias utilizadas<textarea name="intervencoes" rows="4" placeholder="Técnicas, perguntas, exercícios ou intervenções..."></textarea></label>
       <label>Combinados e tarefas até a próxima sessão<textarea name="tarefas" rows="4" placeholder="Atividades, observações ou combinados com o paciente..."></textarea></label>
@@ -325,7 +327,7 @@ function gerarDemo(){
         {humor:'Variável',temas:'Mudanças, expectativas e tomada de decisão',conteudo:'Foram discutidas expectativas diante de uma mudança recente e os receios associados. Paciente diferenciou aspectos sob seu controle daqueles que não dependem de sua ação.',intervencoes:'Questionamento reflexivo e organização de possibilidades.',tarefas:'Anotar duas alternativas possíveis e os aspectos positivos e desafiadores de cada uma.',plano:'Retomar as alternativas e avaliar os próximos passos.'},
         {humor:'Desanimado',temas:'Motivação e rotina',conteudo:'Paciente relatou dificuldade para iniciar algumas atividades. Conversamos sobre metas realistas e sobre a importância de dividir tarefas em etapas menores.',intervencoes:'Planejamento gradual e identificação de barreiras práticas.',tarefas:'Escolher uma tarefa pequena e definir um primeiro passo concreto.',plano:'Avaliar o que facilitou ou dificultou o início da atividade.'}
       ];
-      if(i>0&&i<=45&&st!=='Cancelada'&&consulta.presenca!=='Faltou'&&rnd()<.58)consulta._anotacao={...exemplos[(ni+Math.floor(i/7))%exemplos.length],_demo:true};
+      if(i>0&&st!=='Cancelada'&&consulta.presenca!=='Faltou')consulta._anotacao={...exemplos[(ni+Math.floor(i/7))%exemplos.length],evolucao_nota:2+((ni+Math.floor(i/7))%4),_demo:true};
       out.push(consulta)}}
   return out.sort((x,y)=>(x.data+x.hora).localeCompare(y.data+y.hora))}
 function gerarDemoBlq(){const dia=n=>{const d=new Date();d.setDate(d.getDate()+n);return ymd(d)};
