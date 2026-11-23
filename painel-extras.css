@@ -1,0 +1,23 @@
+
+/* Módulos adicionais do painel */
+.extra-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}
+.extra-grid.two{grid-template-columns:repeat(2,minmax(0,1fr));margin:0}
+.extra-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.extra-card{background:#fffaf5;border:1px solid #ead9cc;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.extra-card h3{margin:0;color:#38241d}
+.extra-card label{display:flex;flex-direction:column;gap:6px;color:#806b61;font-size:13px;font-weight:600;min-width:0}
+.extra-card input,.extra-card select,.extra-card textarea{width:100%;min-width:0;font:inherit;border:1px solid #e5d4c7;border-radius:10px;padding:10px;background:#fff;color:#35231d}
+.extra-card textarea{resize:vertical;line-height:1.6}
+.extra-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.extra-kpi{padding:18px;border-radius:15px;background:#f3e7dd;border:1px solid #ead9cc}
+.extra-kpi strong{display:block;font:700 27px "Cormorant Garamond",Georgia,serif;color:#38241d}
+.extra-kpi span{font-size:12px;color:#806b61}
+.note-history{margin-top:18px}
+.note-version{padding:12px 0;border-top:1px solid #ead9cc;white-space:pre-wrap;overflow-wrap:anywhere}
+.security-note{padding:13px 15px;border-radius:12px;background:#fff4e5;border:1px solid #e7c99f;color:#6d4a20;font-size:13px;line-height:1.6}
+.days{display:flex;gap:12px;flex-wrap:wrap}.days label{display:flex;flex-direction:row;align-items:center;gap:5px}
+.days input{width:auto}
+#p-configuracoes fieldset{border:1px solid #ead9cc;border-radius:12px;padding:12px}
+#p-configuracoes legend{font-weight:600;color:#806b61}
+#p-financeiro #fin-lista .row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media(max-width:650px){.extra-grid,.extra-grid.two,.extra-grid.three{grid-template-columns:1fr}.extra-card{padding:14px}.extra-actions .ab{width:100%}}
