@@ -32,6 +32,34 @@ details:first-of-type{border-top:0}
 summary{cursor:pointer;display:flex;flex-direction:column;gap:2px;font-weight:600}
 summary .mut{font-weight:400;margin:0;font-size:14px}
 .tab+.tab{margin-left:0}
+.sem-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.sem-head h2{margin-bottom:4px}.sem-head p{margin:0}
+.sem-nav{display:flex;gap:6px}
+.sem-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:16px}
+.sem-grid.dom{grid-template-columns:repeat(7,minmax(0,1fr))}
+.sem-col{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.sem-col.hoje{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac)}
+.sem-dh{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.sem-dh b{font-family:"Cormorant Garamond",Georgia,serif;font-size:20px;line-height:1.1}
+.sem-dh small{color:var(--mut);margin-left:4px;font-size:12px}
+.sem-n{font-size:12px;font-weight:700;min-width:22px;text-align:center;padding:2px 7px;border-radius:999px;background:var(--s);border:1px solid var(--line)}
+.sem-col.hoje .sem-n{background:var(--ac);color:var(--acink);border-color:var(--ac)}
+.sem-bar{height:4px;border-radius:4px;background:var(--line);overflow:hidden}
+.sem-bar i{display:block;height:100%;background:var(--ac);border-radius:4px}
+.sem-it{display:flex;flex-direction:column;gap:1px;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;background:var(--s);border:1px solid var(--line);border-left:3px solid var(--ok);border-radius:10px;padding:6px 8px}
+.sem-it.nova{border-left-color:var(--warn)}
+.sem-it.passou{opacity:.65}
+.sem-it[aria-pressed=true]{outline:2px solid var(--ac);outline-offset:1px}
+.sem-it:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.sem-h{font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+.sem-nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sem-m{font-size:11px;color:var(--mut)}
+.sem-vz{font-size:13px;color:var(--mut)}
+.sem-det{margin-top:14px;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.sem-det[hidden]{display:none}
+.sem-det .t{flex:1;min-width:200px}.sem-det .t b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:22px;line-height:1.2}
+@media(max-width:720px){.sem-grid,.sem-grid.dom{grid-template-columns:1fr}.sem-col{flex-direction:row;flex-wrap:wrap;align-items:center}.sem-col>.sem-dh{flex:0 0 100%}.sem-col .sem-bar{display:none}.sem-it{flex:1 1 140px;width:auto}}
+
 
 .pac-header {
   display:flex;
@@ -82,7 +110,14 @@ summary .mut{font-weight:400;margin:0;font-size:14px}
 <div class="g2">
 <section class="card"><h2>Receita dos últimos 6 meses</h2><div class="cw"><canvas id="c1"></canvas></div></section>
 <section class="card"><h2>Modalidade</h2><div class="cw"><canvas id="c3"></canvas></div></section></div>
-<section class="card"><h2>Sessões por dia da semana</h2><div class="cw" style="height:200px"><canvas id="c2"></canvas></div></section>
+<section class="card" id="semana">
+  <div class="sem-head">
+    <div><h2>Atendimentos da semana</h2><p class="mut" id="sem-resumo"></p></div>
+    <div class="sem-nav"><button class="btn s" data-sem="-1" aria-label="Semana anterior">‹</button><button class="btn s" data-sem="0">Hoje</button><button class="btn s" data-sem="1" aria-label="Próxima semana">›</button></div>
+  </div>
+  <div class="sem-grid" id="sem-grid"></div>
+  <div class="sem-det" id="sem-det" hidden></div>
+</section>
 <div class="tabs" role="tablist">
 <button class="tab" data-tab="hoje" aria-selected="true">Hoje <span id="nh">0</span></button>
 <button class="tab" data-tab="prox" aria-selected="false">Próximas <span id="np">0</span></button>
@@ -141,9 +176,10 @@ function gerarDemo(){
   let a=7;const rnd=()=>{let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296};
   const nomes=['Marina Alves','Rafael Couto','Beatriz Lima','Camila Rocha','Diego Martins','Paula Nunes','Henrique Dias','Larissa Pires','Tiago Barros','Ana Souza','Felipe Moura','Julia Castro'];
   const out=[];
-  for(let i=170;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const w=d.getDay();if(w===0)continue;
+  const hs=(C.HORAS&&C.HORAS.length?C.HORAS:['09:00','10:00','11:00','14:00','15:00','16:00','18:00','19:00']);
+  for(let i=170;i>=-14;i--){const d=new Date();d.setDate(d.getDate()-i);const w=d.getDay();if(w===0)continue;
     const n=Math.min(5,1+Math.floor(rnd()*(2+(170-i)/45)));
-    for(let k=0;k<n;k++)out.push({data:ymd(d),nome:nomes[Math.floor(rnd()*nomes.length)],modalidade:rnd()<.62?'Online':'Presencial',status:'Confirmada',pago:i>6||rnd()<.5,valor:C.VALOR||180})}
+    for(let k=0;k<n;k++)out.push({data:ymd(d),hora:hs[(k*2+Math.floor(rnd()*2))%hs.length],nome:nomes[Math.floor(rnd()*nomes.length)],modalidade:rnd()<.62?'Online':'Presencial',status:'Confirmada',pago:i<0?false:(i>6||rnd()<.5),valor:C.VALOR||180})}
   return out}
 
 function conta(el,fim,fmt){const t0=performance.now();const f=t=>{const p=Math.min((t-t0)/700,1);el.textContent=fmt(fim*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
@@ -166,11 +202,42 @@ function painel(){
     {label:'Recebido',data:meses.map(m=>soma(m,true)),backgroundColor:ok,borderRadius:8,stack:'a'},
     {label:'A receber',data:meses.map(m=>soma(m,false)),backgroundColor:warn,borderRadius:8,stack:'a'}]},
     options:{...eixo,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:line},beginAtZero:true,ticks:{callback:v=>'R$ '+v}}},plugins:{legend:{position:'bottom'}}}});
-  const dias=['Seg','Ter','Qua','Qui','Sex','Sáb'];
-  grafico('c2',{type:'bar',data:{labels:dias,datasets:[{data:dias.map((_,i)=>ativos.filter(r=>new Date(r.data+'T12:00').getDay()===i+1).length),backgroundColor:ac,borderRadius:8}]},options:eixo});
+  semana(ativos);
   const on=ativos.filter(r=>r.modalidade==='Online').length;
   grafico('c3',{type:'doughnut',data:{labels:['Presencial','Online'],datasets:[{data:[ativos.length-on,on],backgroundColor:[ac,ok],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom'}}}});
 }
+
+
+let semOff=0,semSel=null;
+function semana(base){
+  const nomesD=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],hojeS=ymd(new Date());
+  const t=new Date();t.setHours(12,0,0,0);
+  const seg=new Date(t);seg.setDate(t.getDate()-((t.getDay()+6)%7)+semOff*7);
+  const dias=[...Array(7)].map((_,i)=>{const d=new Date(seg);d.setDate(seg.getDate()+i);return d});
+  const hh=r=>String(r.hora||'').slice(0,5);
+  const lista=dias.map(d=>base.filter(r=>r.data===ymd(d)).sort((a,b)=>hh(a).localeCompare(hh(b))));
+  const comDom=lista[6].length>0,n=comDom?7:6,todas=lista.flat();
+  const pac=new Set(todas.map(r=>r.whatsapp||r.nome)).size,novas=todas.filter(r=>r.status==='Nova').length;
+  const f=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  const titulo=semOff===0?'Esta semana':semOff===1?'Próxima semana':semOff===-1?'Semana passada':'Semana';
+  $('sem-resumo').textContent=titulo+', '+f(dias[0])+' a '+f(dias[n-1])+': '+(todas.length?todas.length+(todas.length>1?' sessões':' sessão')+' com '+pac+(pac>1?' pacientes':' paciente')+(novas?', '+novas+(novas>1?' aguardando confirmação':' aguardando confirmação'):''):'nenhuma sessão marcada');
+  const max=Math.max(1,...lista.map(l=>l.length));
+  $('sem-grid').className='sem-grid'+(comDom?' dom':'');
+  $('sem-grid').innerHTML=dias.slice(0,n).map((d,i)=>{const ds=ymd(d),its=lista[i];
+    return `<div class="sem-col${ds===hojeS?' hoje':''}"><div class="sem-dh"><span><b>${nomesD[i]}</b><small>${f(d)}</small></span><span class="sem-n" title="Pacientes no dia">${its.length}</span></div>
+    <div class="sem-bar"><i style="width:${its.length/max*100}%"></i></div>
+    ${its.length?its.map(r=>{const k=r.data+'|'+hh(r)+'|'+r.nome;return `<button type="button" class="sem-it${r.status==='Nova'?' nova':''}${ds<hojeS?' passou':''}" data-it="${esc(k)}" aria-pressed="${semSel===k}"><span class="sem-h">${hh(r)}</span><span class="sem-nm">${esc(r.nome)}</span><span class="sem-m">${esc(r.modalidade||'')}${r.status==='Nova'?' · nova':''}</span></button>`}).join(''):'<span class="sem-vz">Livre</span>'}</div>`}).join('');
+  const sel=todas.find(r=>r.data+'|'+hh(r)+'|'+r.nome===semSel),det=$('sem-det');
+  if(!sel){det.hidden=true;det.innerHTML='';return}
+  det.hidden=false;
+  det.innerHTML=`<div class="t"><b>${esc(sel.nome)}</b><span class="mut">${new Date(sel.data+'T12:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})} às ${hh(sel)}</span></div>
+    <span class="tag">${esc(sel.modalidade||'')}</span><span class="tag ${sel.status==='Confirmada'?'ok':'new'}">${esc(sel.status||'')}</span><span class="tag ${sel.pago?'ok':'new'}">${sel.pago?'Pago':'Pendente'}</span>
+    ${sel.whatsapp?`<a class="btn s" href="${zapUrl(sel,lembrete(sel))}" target="_blank" rel="noopener">Lembrar por WhatsApp</a>`:''}`}
+document.addEventListener('click',e=>{
+  const n=e.target.closest('[data-sem]');
+  if(n){const v=+n.dataset.sem;semOff=v===0?0:semOff+v;semSel=null;painel();return}
+  const it=e.target.closest('[data-it]');
+  if(it){semSel=semSel===it.dataset.it?null:it.dataset.it;painel()}});
 
 async function init(){const{data:{session}}=await sb.auth.getSession();session?abrir():$('login').hidden=false}
 function abrir(){$('login').hidden=true;$('app').hidden=false;carregar()}
