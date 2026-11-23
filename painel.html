@@ -160,7 +160,8 @@ summary .mut{font-weight:400;margin:0;font-size:14px}
 <script src="config.js"></script>
 <script>
 const C=CFG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_KEY),$=i=>document.getElementById(i);
-let rows=[],aberto={},charts={},demoOn=false,demoRows=null;
+let rows=[],aberto={},charts={},demoOn=false,demoRows=null,demoBlq=[],demoSeq=1000;
+const dados=()=>demoOn?(demoRows??=gerarDemo()):rows,blqAtual=()=>demoOn?demoBlq:blq;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const brl=n=>'R$ '+Number(n).toFixed(2).replace('.',',');
@@ -169,24 +170,31 @@ function crc(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;f
 function pixCode(valor){const f=(id,v)=>id+String(v.length).padStart(2,'0')+v;
   const p=f('00','01')+f('01','11')+f('26',f('00','br.gov.bcb.pix')+f('01',C.PIX_CHAVE))+f('52','0000')+f('53','986')+f('54',Number(valor).toFixed(2))+f('58','BR')+f('59',C.PIX_NOME.slice(0,25))+f('60',C.PIX_CIDADE.slice(0,15))+f('62',f('05','***'))+'6304';
   return p+crc(p)}
-const zapUrl=(r,t)=>'https://wa.me/'+(r.whatsapp||'')+'?text='+encodeURIComponent(t);
+const zapUrl=(r,t)=>'https://wa.me/'+(demoOn?'':(r.whatsapp||''))+'?text='+encodeURIComponent(t);
 const lembrete=r=>'Oi, '+r.nome.split(' ')[0]+'! Lembrando da sua sessão '+fdata(r.data)+' às '+r.hora.slice(0,5)+'.'+(r.link_sessao?' Link da sessão: '+r.link_sessao+'.':'')+' Pode confirmar?';
 
 function gerarDemo(){
   let a=7;const rnd=()=>{let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296};
   const nomes=['Marina Alves','Rafael Couto','Beatriz Lima','Camila Rocha','Diego Martins','Paula Nunes','Henrique Dias','Larissa Pires','Tiago Barros','Ana Souza','Felipe Moura','Julia Castro'];
-  const out=[];
   const hs=(C.HORAS&&C.HORAS.length?C.HORAS:['09:00','10:00','11:00','14:00','15:00','16:00','18:00','19:00']);
-  for(let i=170;i>=-14;i--){const d=new Date();d.setDate(d.getDate()-i);const w=d.getDay();if(w===0)continue;
-    const n=Math.min(5,1+Math.floor(rnd()*(2+(170-i)/45)));
-    for(let k=0;k<n;k++)out.push({data:ymd(d),hora:hs[(k*2+Math.floor(rnd()*2))%hs.length],nome:nomes[Math.floor(rnd()*nomes.length)],modalidade:rnd()<.62?'Online':'Presencial',status:'Confirmada',pago:i<0?false:(i>6||rnd()<.5),valor:C.VALOR||180})}
-  return out}
+  const out=[];let id=0;
+  for(let i=170;i>=-14;i--){const d=new Date();d.setDate(d.getDate()-i);const w=d.getDay();if(w===0&&i!==0)continue;
+    const n=Math.min(5,hs.length,1+Math.floor(rnd()*(2+(170-i)/45))),h0=Math.floor(rnd()*hs.length),p0=Math.floor(rnd()*nomes.length);
+    for(let k=0;k<n;k++){const ni=(p0+k*5)%nomes.length,on=rnd()<.62;
+      const st=i<0?(rnd()<.35?'Nova':'Confirmada'):(rnd()<.05?'Cancelada':'Confirmada');
+      out.push({id:'d'+(++id),data:ymd(d),hora:hs[(h0+k)%hs.length],nome:nomes[ni],whatsapp:'5511900000'+(100+ni),
+        modalidade:on?'Online':'Presencial',link_sessao:on?'https://meet.google.com/exemplo-demo':null,status:st,
+        pago:st==='Cancelada'||i<0?false:(i>6||rnd()<.5),
+        presenca:i>2&&st!=='Cancelada'?(rnd()<.88?'Compareceu':'Faltou'):null,valor:C.VALOR||180})}}
+  return out.sort((x,y)=>(x.data+x.hora).localeCompare(y.data+y.hora))}
+function gerarDemoBlq(){const dia=n=>{const d=new Date();d.setDate(d.getDate()+n);return ymd(d)};
+  return [{id:'b1',data:dia(16),hora:null,motivo:'Feriado (exemplo)'},{id:'b2',data:dia(17),hora:'12:00',motivo:'Almoço (exemplo)'}]}
 
 function conta(el,fim,fmt){const t0=performance.now();const f=t=>{const p=Math.min((t-t0)/700,1);el.textContent=fmt(fim*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
 const col=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 function grafico(id,cfg){charts[id]?.destroy();charts[id]=new Chart($(id),cfg)}
 function painel(){
-  const base=demoOn?(demoRows??=gerarDemo()):rows,ativos=base.filter(r=>r.status!=='Cancelada');
+  const base=dados(),ativos=base.filter(r=>r.status!=='Cancelada');
   const ac=col('--ac'),ok=col('--ok'),warn=col('--warn'),mut=col('--mut'),line=col('--line');
   Chart.defaults.color=mut;Chart.defaults.font.family='system-ui,sans-serif';
   const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
@@ -244,7 +252,7 @@ function abrir(){$('login').hidden=true;$('app').hidden=false;carregar()}
 $('entrar').onclick=async()=>{const{error}=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});
   if(error)$('err').textContent='E-mail ou senha incorretos.';else abrir()};
 $('sair').onclick=async()=>{await sb.auth.signOut();location.reload()};
-$('demo').onclick=()=>{demoOn=!demoOn;$('bd').hidden=!demoOn;$('demo').textContent=demoOn?'Voltar aos dados reais':'Ver com dados de exemplo';painel()};
+$('demo').onclick=()=>{demoOn=!demoOn;if(demoOn){demoRows=gerarDemo();demoBlq=gerarDemoBlq()}semSel=null;semOff=0;remarc={};aberto={};$('bd').hidden=!demoOn;$('demo').textContent=demoOn?'Voltar aos dados reais':'Ver com dados de exemplo';desenha();desenhaBlq();painel()};
 async function carregar() {
   const lote = 1000;
   let inicio = 0;
@@ -303,8 +311,9 @@ function linha(r){return `<div class="row">
       <button class="btn s" data-a="pago" data-id="${r.id}">Marcar como pago</button></div></div>`:''}
     ${r.link_sessao?`<div class="mut" style="width:100%;margin:0">Sessão online: ${esc(r.link_sessao)}</div>`:''}</div>`}
 
+function atualiza(){desenha();painel()}
 function desenha(){
-  const hoje=ymd(new Date()),ativos=rows.filter(r=>r.status!=='Cancelada');
+  const hoje=ymd(new Date()),ativos=dados().filter(r=>r.status!=='Cancelada');
   const dHoje=ativos.filter(r=>r.data===hoje),dProx=ativos.filter(r=>r.data>hoje),novas=dProx.filter(r=>r.status==='Nova').length;
   $('agenda-hoje').innerHTML=dHoje.length?dHoje.map(linha).join(''):'<p class="mut">Nenhuma sessão marcada para hoje.</p>';
   $('agenda-prox').innerHTML=dProx.length?dProx.map(linha).join(''):'<p class="mut">Nenhuma consulta nos próximos dias.</p>';
@@ -317,7 +326,7 @@ function pacientes() {
   const q = norm($('busca').value);
   const grupos = new Map();
 
-  rows.forEach(r => {
+  dados().forEach(r => {
     const telefone = String(r.whatsapp || '').replace(/\D/g, '');
     const nomeNormalizado = norm(r.nome).trim();
 
@@ -347,7 +356,7 @@ function pacientes() {
   const todosPacientes = [...grupos.values()];
 
   $('total-pacientes').textContent = todosPacientes.length;
-  $('total-consultas').textContent = rows.length;
+  $('total-consultas').textContent = dados().length;
 
   const lista = todosPacientes
     .filter(p =>
@@ -417,7 +426,7 @@ function pacientes() {
             ${p.zap ? `
               <div class="acts" style="margin:8px 0">
                 <a class="btn s"
-                  href="https://wa.me/${esc(String(p.zap).replace(/\D/g, ''))}"
+                  href="https://wa.me/${demoOn ? '' : esc(String(p.zap).replace(/\D/g, ''))}"
                   target="_blank" rel="noopener">
                   Abrir WhatsApp
                 </a>
@@ -435,23 +444,25 @@ document.addEventListener('toggle',e=>{const d=e.target;if(d.dataset&&d.dataset.
 function trocaAba(a){aba=a;document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===a));['hoje','prox','pac','blq'].forEach(x=>$('p-'+x).hidden=x!==a)}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>trocaAba(b.dataset.tab));
 
-async function upd(r,p){const{error}=await sb.from('consultas').update(p).eq('id',r.id);error?alert(error.message):carregar()}
+async function upd(r,p){if(demoOn){Object.assign(r,p);atualiza();return}const{error}=await sb.from('consultas').update(p).eq('id',r.id);error?alert(error.message):carregar()}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;
-  const r=rows.find(x=>x.id===b.dataset.id),a=b.dataset.a;
-  if(a==='bdel'){const{error}=await sb.from('bloqueios').delete().in('id',b.dataset.id.split(','));error?alert(error.message):carregaBlq();return}
+  const r=dados().find(x=>String(x.id)===b.dataset.id),a=b.dataset.a;
+  if(a==='bdel'){const ids=b.dataset.id.split(',');if(demoOn){demoBlq=demoBlq.filter(x=>!ids.includes(String(x.id)));desenhaBlq();return}const{error}=await sb.from('bloqueios').delete().in('id',b.dataset.id.split(','));error?alert(error.message):carregaBlq();return}
   if(a==='conf')upd(r,{status:'Confirmada'});
   if(a==='pres')upd(r,{presenca:b.dataset.v});
   if(a==='remarc'){remarc[r.id]=!remarc[r.id];desenha()}
   if(a==='rsalva'){const d=$('rd-'+r.id).value,hh=$('rh-'+r.id).value;if(!d)return;
+    if(demoOn){if(dados().some(x=>x!==r&&x.status!=='Cancelada'&&x.data===d&&String(x.hora).slice(0,5)===hh))return alert('Esse horário já está ocupado.');r.data=d;r.hora=hh;remarc[r.id]=false;atualiza();return}
     const{error}=await sb.from('consultas').update({data:d,hora:hh}).eq('id',r.id);
     if(error)alert(error.code==='23505'?'Esse horário já está ocupado.':error.message);else{remarc[r.id]=false;carregar()}}
   if(a==='rep'){const n=parseInt(prompt('Repetir toda semana por quantas semanas a mais?','8'),10);if(!n||n<1)return;
     let ok=0;const falhas=[];
     for(let i=1;i<=n;i++){const d=new Date(r.data+'T12:00');d.setDate(d.getDate()+7*i);const ds=ymd(d);
-      if(blq.some(x=>x.data===ds&&(!x.hora||x.hora.slice(0,5)===r.hora.slice(0,5)))){falhas.push(fdata(ds));continue}
+      if(blqAtual().some(x=>x.data===ds&&(!x.hora||x.hora.slice(0,5)===r.hora.slice(0,5)))){falhas.push(fdata(ds));continue}
+      if(demoOn){if(dados().some(x=>x.status!=='Cancelada'&&x.data===ds&&String(x.hora).slice(0,5)===String(r.hora).slice(0,5))){falhas.push(fdata(ds));continue}demoRows.push({...r,id:'d'+(++demoSeq),data:ds,status:'Confirmada',pago:false,presenca:null});ok++;continue}
       const{error}=await sb.from('consultas').insert({data:ds,hora:r.hora,nome:r.nome,whatsapp:r.whatsapp,modalidade:r.modalidade,link_sessao:r.link_sessao,valor:r.valor,status:'Confirmada'});
       error?falhas.push(fdata(ds)):ok++}
-    alert(ok+' sessões criadas.'+(falhas.length?' Não criadas (horário ocupado ou bloqueado): '+falhas.join(', '):''));carregar()}
+    alert(ok+' sessões criadas.'+(falhas.length?' Não criadas (horário ocupado ou bloqueado): '+falhas.join(', '):''));demoOn?atualiza():carregar()}
   if(a==='rec'){const w=window.open('','_blank');if(!w)return alert('Permita pop-ups para gerar o recibo.');
     w.document.write(`<!DOCTYPE html><meta charset="utf-8"><title>Recibo</title><body style="font:16px/1.6 system-ui;max-width:640px;margin:40px auto;padding:0 20px"><h1>Recibo</h1><p>Recebi de <b>${esc(r.nome)}</b> a quantia de <b>${brl(r.valor)}</b>, referente à sessão realizada em <b>${new Date(r.data+'T12:00').toLocaleDateString('pt-BR')}</b>, às ${r.hora.slice(0,5)}.</p><p style="margin-top:60px">______________________________<br>${esc(C.NOME)}${C.CRP?'<br>'+esc(C.CRP):''}</p><p style="color:#666;font-size:13px">Emitido em ${new Date().toLocaleDateString('pt-BR')}</p><script>onload=()=>print()<\/script>`);w.document.close()}
   if(a==='pago')upd(r,{pago:true});
@@ -462,7 +473,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
   if(a==='zappix')window.open(zapUrl(r,pixCode(r.valor)),'_blank','noopener')});
 $('bhora').innerHTML='<option value="">Dia inteiro</option>'+C.HORAS.map(x=>`<option>${x}</option>`).join('');
 async function carregaBlq(){const{data,error}=await sb.from('bloqueios').select('*').order('data').order('hora');blq=error?[]:data;desenhaBlq()}
-function desenhaBlq(){const hoje=ymd(new Date()),l=blq.filter(b=>b.data>=hoje),g=[];
+function desenhaBlq(){const hoje=ymd(new Date()),l=blqAtual().filter(b=>b.data>=hoje),g=[];
   l.forEach(b=>{const u=g[g.length-1];let prox=null;if(u){prox=new Date(u.fim+'T12:00');prox.setDate(prox.getDate()+1)}
     if(u&&u.hora===b.hora&&u.motivo===b.motivo&&ymd(prox)===b.data){u.fim=b.data;u.ids.push(b.id)}else g.push({ini:b.data,fim:b.data,hora:b.hora,motivo:b.motivo,ids:[b.id]})});
   $('blista').innerHTML=g.length?g.map(x=>`<div class="row"><div class="when">${x.hora?x.hora.slice(0,5):'Dia todo'}<small>${x.ini===x.fim?fdata(x.ini):fdata(x.ini)+' a '+fdata(x.fim)}</small></div><div class="who">${esc(x.motivo||'Sem motivo')}</div><button class="btn s" data-a="bdel" data-id="${x.ids.join(',')}">Remover</button></div>`).join(''):'<p class="mut">Nenhum bloqueio.</p>'}
@@ -470,12 +481,14 @@ $('bsalvar').onclick=async()=>{const ini=$('bdata').value,fim=$('bate').value||i
   if(!ini)return alert('Escolha a data inicial.');if(fim<ini)return alert('A data final não pode ser antes da inicial.');
   const hr=$('bhora').value||null,mot=$('bmot').value.trim()||null,linhas=[];
   for(let d=new Date(ini+'T12:00');ymd(d)<=fim&&linhas.length<366;d.setDate(d.getDate()+1))linhas.push({data:ymd(d),hora:hr,motivo:mot});
-  const{error}=await sb.from('bloqueios').insert(linhas);
+  let error=null;
+  if(demoOn){linhas.forEach(l=>demoBlq.push({...l,id:'b'+(++demoSeq)}));demoBlq.sort((x,y)=>(x.data+(x.hora||'')).localeCompare(y.data+(y.hora||'')))}
+  else({error}=await sb.from('bloqueios').insert(linhas));
   if(error)return alert(error.message);
-  const n=rows.filter(r=>r.status!=='Cancelada'&&r.data>=ini&&r.data<=fim&&(!hr||r.hora.slice(0,5)===hr)).length;
-  $('bmot').value='';$('bdata').value='';$('bate').value='';carregaBlq();
+  const n=dados().filter(r=>r.status!=='Cancelada'&&r.data>=ini&&r.data<=fim&&(!hr||r.hora.slice(0,5)===hr)).length;
+  $('bmot').value='';$('bdata').value='';$('bate').value='';demoOn?desenhaBlq():carregaBlq();
   if(n)alert('Atenção: já existem '+n+' consulta(s) nesse período. Elas continuam na agenda: remarque ou cancele.')};
-$('csv').onclick=()=>{const L=[['Data','Hora','Paciente','WhatsApp','Modalidade','Status','Presença','Pago','Valor']].concat(rows.map(r=>[r.data,r.hora.slice(0,5),r.nome,r.whatsapp||'',r.modalidade,r.status,r.presenca||'',r.pago?'Sim':'Não',Number(r.valor).toFixed(2).replace('.',',')]));
+$('csv').onclick=()=>{const L=[['Data','Hora','Paciente','WhatsApp','Modalidade','Status','Presença','Pago','Valor']].concat(dados().map(r=>[r.data,r.hora.slice(0,5),r.nome,r.whatsapp||'',r.modalidade,r.status,r.presenca||'',r.pago?'Sim':'Não',Number(r.valor).toFixed(2).replace('.',',')]));
   const csv='\ufeff'+L.map(l=>l.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='consultas.csv';a.click()};
 init();
