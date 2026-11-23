@@ -21,3 +21,12 @@ create policy "dona edita anotacoes" on public.anotacoes_consultas
   for update to authenticated using (public.eh_dona()) with check (public.eh_dona());
 grant select,insert,update on public.anotacoes_consultas to authenticated;
 revoke all on public.anotacoes_consultas from anon;
+
+-- Evolução longitudinal: avaliação subjetiva registrada pela profissional (escala 1–5).
+alter table public.anotacoes_consultas
+  add column if not exists evolucao_nota smallint;
+alter table public.anotacoes_consultas
+  drop constraint if exists anotacoes_consultas_evolucao_nota_check;
+alter table public.anotacoes_consultas
+  add constraint anotacoes_consultas_evolucao_nota_check
+  check (evolucao_nota is null or evolucao_nota between 1 and 5);
