@@ -73,3 +73,8 @@
 .sessao-historico-item .mut{font-size:12px}
 .sessao-historico-item p{white-space:pre-wrap;overflow-wrap:anywhere}
 @media(max-width:700px){.sessao-paciente-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sessao-fields{grid-template-columns:1fr}.sessao-fields label.wide{grid-column:auto}.sessao-footer>div{width:100%}.sessao-footer .ab{flex:1}}
+
+.pac-nota{flex:0 0 100%;width:100%;margin:6px 0 2px;padding:10px 12px;border-radius:10px;background:#fffaf6;border:1px solid #ead9cc;white-space:normal}
+.pac-nota b{display:block;font-size:12px;color:#795947;margin-bottom:4px}
+.pac-nota p{font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;margin:5px 0;color:#58483f}
+.pac-nota .mut{font-size:12px}
