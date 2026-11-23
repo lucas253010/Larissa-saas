@@ -41,3 +41,35 @@
 #app .quick-links button:hover{background:#f1e2d6;color:#8d4935}
 #app .quick-links button:focus-visible{outline:2px solid #a64f38;outline-offset:2px}
 @media(max-width:560px){#app .quick-links{gap:4px}#app .quick-links button{font-size:11px;padding:6px}}
+
+
+/* Área de sessão clínica */
+#p-sessao{border-color:#dfc9b9}
+.sessao-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sessao-head h2{margin:3px 0 4px;font:600 30px "Cormorant Garamond",Georgia,serif;color:#38241d}
+.sessao-eyebrow{font-size:10px;letter-spacing:.16em;font-weight:700;color:#a36d55}
+.sessao-status{border-radius:999px;padding:7px 12px;background:#f3e7dd;color:#76513f;font-size:12px;font-weight:700}
+.sessao-paciente{background:linear-gradient(120deg,#f7eee7,#fffaf6);border:1px solid #ead9cc;border-radius:16px;padding:16px;margin:12px 0 18px}
+.sessao-paciente-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.sessao-paciente-grid span{display:block;font-size:11px;color:#8a7165;margin-bottom:4px}
+.sessao-paciente-grid b{font-size:14px;color:#38241d;overflow-wrap:anywhere}
+.sessao-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid #ead9cc}
+.sessao-toolbar b{display:block;color:#38241d;font-size:17px}
+.sessao-toolbar small{display:block;color:#8a7165;margin-top:3px}
+.sessao-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}
+.sessao-fields label{display:flex;flex-direction:column;gap:6px;color:#806b61;font-size:13px;font-weight:600;min-width:0}
+.sessao-fields label.wide{grid-column:1/-1}
+.sessao-fields input,.sessao-fields select,.sessao-fields textarea{width:100%;min-width:0;border:1px solid #e5d4c7;border-radius:11px;padding:11px;background:#fff;color:#35231d;font:inherit;font-weight:400;line-height:1.55}
+.sessao-fields textarea{resize:vertical;min-height:92px}
+.sessao-fields textarea:focus,.sessao-fields input:focus,.sessao-fields select:focus{outline:2px solid #c18b70;outline-offset:1px}
+.sessao-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid #ead9cc;padding-top:14px}
+.sessao-footer p{max-width:480px;font-size:12px;margin:0}
+.sessao-footer>div{display:flex;gap:8px;flex-wrap:wrap}
+.sessao-historico{margin-top:22px;padding-top:16px;border-top:1px solid #ead9cc}
+.sessao-historico h3{margin:0 0 10px;color:#38241d}
+.sessao-historico-item{padding:12px 0;border-top:1px solid #ead9cc}
+.sessao-historico-item:first-child{border-top:0}
+.sessao-historico-item summary{display:flex;flex-direction:row;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.sessao-historico-item .mut{font-size:12px}
+.sessao-historico-item p{white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:700px){.sessao-paciente-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sessao-fields{grid-template-columns:1fr}.sessao-fields label.wide{grid-column:auto}.sessao-footer>div{width:100%}.sessao-footer .ab{flex:1}}
