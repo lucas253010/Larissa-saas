@@ -14,13 +14,49 @@
     humor:field('humor').value||null,
     evolucao_nota:field('evolucao_nota').value?Number(field('evolucao_nota').value):null,
     temas:field('temas').value.trim()||null,
-    intervencoes:field('intervencoes').value.trim()||null,
+    intervencoes:buildIntervencoes()||null,
     tarefas:field('tarefas').value.trim()||null,
     plano:field('plano').value.trim()||null
   });
+  const gruposIntervencoes=[
+    {nome:'Acolhimento e escuta',itens:['Escuta ativa','Acolhimento emocional','Validação emocional','Empatia terapêutica']},
+    {nome:'Técnicas cognitivas',itens:['Identificação de pensamentos automáticos','Questionamento de crenças','Reestruturação cognitiva','Psicoeducação']},
+    {nome:'Técnicas emocionais',itens:['Regulação emocional','Identificação de emoções','Exercícios de respiração','Mindfulness']},
+    {nome:'Estratégias comportamentais',itens:['Estratégias de enfrentamento','Resolução de problemas','Treino de habilidades sociais','Exposição gradual']},
+    {nome:'Reflexão e desenvolvimento',itens:['Autoconhecimento','Estabelecimento de limites','Fortalecimento da autoestima','Reflexão sobre padrões de comportamento']}
+  ];
+  function buildIntervencoes(){
+    const selecionadas=gruposIntervencoes.map(g=>({nome:g.nome,itens:g.itens.filter(v=>form.querySelector('[data-intervencao="'+CSS.escape(v)+'"]')?.checked)})).filter(g=>g.itens.length);
+    const manual=field('intervencoes_manual').value.trim();
+    if(!selecionadas.length&&!manual)return '';
+    return 'Intervenções selecionadas:\n'+selecionadas.map(g=>g.nome+': '+g.itens.join('; ')).join('\n')+(manual?'\nComplemento: '+manual:'');
+  }
+  function parseIntervencoes(valor){
+    const texto=String(valor||'');
+    const prefixo='Intervenções selecionadas:\n';
+    const checks=[...form.querySelectorAll('[data-intervencao]')];
+    checks.forEach(c=>c.checked=false);
+    field('intervencoes_manual').value='';
+    if(!texto.startsWith(prefixo)){field('intervencoes_manual').value=texto;return;}
+    const linhas=texto.slice(prefixo.length).split('\n');
+    const conhecidas=new Set(gruposIntervencoes.flatMap(g=>g.itens));
+    const manual=[];
+    linhas.forEach(linha=>{
+      if(linha.startsWith('Complemento: ')){manual.push(linha.slice(13));return;}
+      const pos=linha.indexOf(': ');
+      if(pos<0){if(linha.trim())manual.push(linha);return;}
+      linha.slice(pos+2).split('; ').forEach(item=>{
+        const nome=item.trim();
+        if(conhecidas.has(nome)){const c=checks.find(x=>x.dataset.intervencao===nome);if(c)c.checked=true;}
+        else if(nome)manual.push(nome);
+      });
+    });
+    field('intervencoes_manual').value=manual.join('\n');
+  }
   const fillForm=a=>{
     const x=a||{};
-    ['conteudo','humor','evolucao_nota','temas','intervencoes','tarefas','plano'].forEach(k=>field(k).value=x[k]??'');
+    ['conteudo','humor','evolucao_nota','temas','tarefas','plano'].forEach(k=>field(k).value=x[k]??'');
+    parseIntervencoes(x.intervencoes??'');
   };
   function showArea(){
     if(typeof trocaAba==='function')trocaAba('sessao');
