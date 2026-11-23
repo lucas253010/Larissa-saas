@@ -1,7 +1,7 @@
 -- Rode no Supabase da Larissa: SQL Editor > New query > Run
 -- TROQUE o e-mail abaixo pelo e-mail que vai logar no painel (o mesmo criado em Authentication > Users)
 create function eh_dona() returns boolean language sql stable as $$
-  select (auth.jwt() ->> 'email') = 'TROQUE_PELO_EMAIL_DELA@exemplo.com'
+  select (auth.jwt() ->> 'email') = 'larissa@painel.com.br'
 $$;
 
 create table consultas (
