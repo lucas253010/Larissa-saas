@@ -462,7 +462,7 @@ function refresca(){desenha();semana(ativosAgora())}
 const semDe=ds=>{const t=new Date();t.setHours(12,0,0,0);t.setDate(t.getDate()-((t.getDay()+6)%7));const d=new Date(ds+'T12:00');d.setDate(d.getDate()-((d.getDay()+6)%7));return Math.round((d-t)/(7*864e5))};
 function atualiza(){desenha();painel()}
 let filtroAg='todas',qAg='',diasAg=14;
-const TABS=[['hoje','Início','hoje','nh'],['prox','Agenda','agenda','np'],['pac','Pacientes','users',''],['prontuarios','Prontuários','receipt',''],['financeiro','Financeiro','wallet',''],['configuracoes','Ajustes','lock','']];
+const TABS=[['hoje','Início','hoje','nh'],['prox','Agenda','agenda','np'],['pac','Pacientes','users',''],['financeiro','Financeiro','wallet',''],['configuracoes','Ajustes','lock','']];
 function montaTabs(){$('tabs').innerHTML=TABS.map(([k,t,i,c])=>`<button type="button" class="tab" role="tab" data-tab="${k}" aria-selected="${k===aba}">${ic(i)}${t}${c?` <b class="ct" id="${c}">0</b>`:''}</button>`).join('')}
 function desenha(){
   const hoje=ymd(new Date()),at=ativosAgora().slice().sort(cmpS);
