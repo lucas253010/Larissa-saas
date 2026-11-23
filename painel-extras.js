@@ -6,7 +6,7 @@
   const msg=(id,t)=>{const e=$x(id);if(e)e.textContent=t||''};
   const dateNow=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
   const brlx=n=>'R$ '+Number(n||0).toFixed(2).replace('.',',');
-  const showTab=(key)=>{extras.forEach(k=>{const p=$x('p-'+k);if(p)p.hidden=k!==key});};
+  const showTab=(key)=>{['hoje','novas','prox','cob','pac','blq',...extras].forEach(k=>{const p=$x('p-'+k);if(p)p.hidden=k!==key});document.querySelectorAll('.tab[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===key)));};
   try{
     TABS.push(['cadastro','Cadastro','users',''],['prontuarios','Prontuários','receipt',''],['financeiro','Financeiro','wallet',''],['configuracoes','Configurações','lock','']);
     montaTabs();
