@@ -313,10 +313,20 @@ function gerarDemo(){
     const n=Math.min(5,hs.length,1+Math.floor(rnd()*(2+(170-i)/45))),h0=Math.floor(rnd()*hs.length),p0=Math.floor(rnd()*nomes.length);
     for(let k=0;k<n;k++){const ni=(p0+k*5)%nomes.length,on=rnd()<.62;
       const st=i<0?(rnd()<.35?'Nova':'Confirmada'):(rnd()<.05?'Cancelada':'Confirmada');
-      out.push({id:'d'+(++id),data:ymd(d),hora:hs[(h0+k)%hs.length],nome:nomes[ni],whatsapp:'5511900000'+(100+ni),
+      const consulta={id:'d'+(++id),data:ymd(d),hora:hs[(h0+k)%hs.length],nome:nomes[ni],whatsapp:'5511900000'+(100+ni),
         modalidade:on?'Online':'Presencial',link_sessao:on?'https://meet.google.com/exemplo-demo':null,status:st,
         pago:st==='Cancelada'||i<0?false:(i>6||rnd()<.5),
-        presenca:i>2&&st!=='Cancelada'?(rnd()<.88?'Compareceu':'Faltou'):null,valor:C.VALOR||180})}}
+        presenca:i>2&&st!=='Cancelada'?(rnd()<.88?'Compareceu':'Faltou'):null,valor:C.VALOR||180};
+      const exemplos=[
+        {humor:'Ansioso',temas:'Rotina, autocobrança e trabalho',conteudo:'Paciente relatou aumento da tensão diante de demandas profissionais. Exploramos situações que intensificam a autocobrança e identificamos pensamentos recorrentes associados ao desempenho.',intervencoes:'Escuta ativa, perguntas abertas e identificação de pensamentos automáticos.',tarefas:'Observar durante a semana situações em que a autocobrança aparece e registrar contexto e pensamentos.',plano:'Retomar os registros e explorar estratégias de enfrentamento.'},
+        {humor:'Tranquilo',temas:'Relacionamentos e comunicação',conteudo:'Sessão dedicada à comunicação de necessidades e limites em relações próximas. Paciente identificou dificuldade em expressar desconforto no momento em que ocorre.',intervencoes:'Psicoeducação sobre comunicação assertiva e ensaio de possíveis falas.',tarefas:'Praticar uma comunicação clara em situação cotidiana, respeitando seu próprio ritmo.',plano:'Verificar como foi a experiência e quais emoções surgiram.'},
+        {humor:'Triste',temas:'Autocuidado e rede de apoio',conteudo:'Paciente descreveu semana emocionalmente exigente. Foram explorados fatores de apoio disponíveis e pequenas ações de autocuidado possíveis na rotina atual.',intervencoes:'Acolhimento, validação emocional e levantamento de recursos pessoais.',tarefas:'Escolher uma atividade breve e viável de autocuidado ao longo da semana.',plano:'Acompanhar humor, rotina e acesso à rede de apoio.'},
+        {humor:'Estável',temas:'Autoconhecimento e reconhecimento de emoções',conteudo:'Paciente conseguiu nomear emoções presentes em situações recentes e relacioná-las a necessidades pessoais. Demonstrou maior clareza ao descrever seus próprios limites.',intervencoes:'Exploração emocional e síntese dos temas trazidos.',tarefas:'Fazer pequenas pausas para identificar e nomear emoções ao longo da semana.',plano:'Aprofundar a relação entre emoções, necessidades e escolhas.'},
+        {humor:'Variável',temas:'Mudanças, expectativas e tomada de decisão',conteudo:'Foram discutidas expectativas diante de uma mudança recente e os receios associados. Paciente diferenciou aspectos sob seu controle daqueles que não dependem de sua ação.',intervencoes:'Questionamento reflexivo e organização de possibilidades.',tarefas:'Anotar duas alternativas possíveis e os aspectos positivos e desafiadores de cada uma.',plano:'Retomar as alternativas e avaliar os próximos passos.'},
+        {humor:'Desanimado',temas:'Motivação e rotina',conteudo:'Paciente relatou dificuldade para iniciar algumas atividades. Conversamos sobre metas realistas e sobre a importância de dividir tarefas em etapas menores.',intervencoes:'Planejamento gradual e identificação de barreiras práticas.',tarefas:'Escolher uma tarefa pequena e definir um primeiro passo concreto.',plano:'Avaliar o que facilitou ou dificultou o início da atividade.'}
+      ];
+      if(i>0&&i<=45&&st!=='Cancelada'&&consulta.presenca!=='Faltou'&&rnd()<.58)consulta._anotacao={...exemplos[(ni+Math.floor(i/7))%exemplos.length],_demo:true};
+      out.push(consulta)}}
   return out.sort((x,y)=>(x.data+x.hora).localeCompare(y.data+y.hora))}
 function gerarDemoBlq(){const dia=n=>{const d=new Date();d.setDate(d.getDate()+n);return ymd(d)};
   return [{id:'b1',data:dia(16),hora:null,motivo:'Feriado (exemplo)'},{id:'b2',data:dia(17),hora:'12:00',motivo:'Almoço (exemplo)'}]}
