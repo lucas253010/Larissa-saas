@@ -90,9 +90,9 @@
     vazio.hidden=!!pontos.length; canvas.parentElement.hidden=!pontos.length;
     if(!pontos.length)return;
     graficoEvolucao=new Chart(canvas,{type:'line',data:{
-      labels:pontos.map(x=>new Date(x.r.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'})),
+      labels:pontos.map(x=>new Date(x.r.data+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})),
       datasets:[{label:'Evolução registrada',data:pontos.map(x=>Number(x.n.evolucao_nota)),borderColor:'#a36d55',backgroundColor:'rgba(163,109,85,.14)',fill:true,tension:.28,pointRadius:4,pointHoverRadius:6}]
-    },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>['','1 · Momento mais difícil','2 · Pequenos avanços / desafios','3 · Estável / em construção','4 · Avanços percebidos','5 · Avanços consistentes'][c.parsed.y]||String(c.parsed.y)}}},scales:{y:{min:1,max:5,ticks:{stepSize:1}},x:{grid:{display:false}}}}});
+    },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>['','1 · Momento mais difícil','2 · Pequenos avanços / desafios','3 · Estável / em construção','4 · Avanços percebidos','5 · Avanços consistentes'][c.parsed.y]||String(c.parsed.y)}}},scales:{y:{min:1,max:5,ticks:{stepSize:1}},x:{grid:{display:false},ticks:{autoSkip:true,maxTicksLimit:6,minRotation:35,maxRotation:45}}}}});
   }
   async function openSession(id){
     const r=(dados()||[]).find(x=>String(x.id)===String(id));
