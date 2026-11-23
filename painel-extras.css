@@ -106,3 +106,20 @@
 #sessao-evolucao-vazio{padding:18px 14px;border:1px dashed #dfc9b9;border-radius:12px;background:#fffdfb;line-height:1.6}
 @media(max-width:640px){.sessao-evolucao-resumo{grid-template-columns:repeat(2,minmax(0,1fr))}.sessao-grafico-wrap{height:240px;padding:4px 0}.sessao-evolucao-kpi{padding:10px}}
 @media(prefers-reduced-motion:reduce){.sessao-evolucao *{animation:none!important;transition:none!important}}
+
+
+/* Seletor de intervenções clínicas */
+.sessao-intervencoes{grid-column:1/-1;min-width:0}
+.sessao-intervencoes-titulo{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.sessao-intervencoes-titulo b{font-size:14px;color:#806b61}
+.sessao-intervencoes-titulo small{font-size:12px;color:#8a7165;font-weight:400}
+.intervencoes-grupos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.intervencao-grupo{min-width:0;margin:0;padding:11px 12px;border:1px solid #ead9cc;border-radius:12px;background:#fffaf6}
+.intervencao-grupo legend{padding:0 5px;color:#795947;font-size:12px;font-weight:700}
+.intervencao-opcoes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px}
+.intervencao-opcoes label{display:flex;flex-direction:row;align-items:flex-start;gap:7px;min-width:0;color:#58483f;font-size:12px;font-weight:500;line-height:1.4;cursor:pointer}
+.intervencao-opcoes input{width:15px;min-width:15px;height:15px;margin:1px 0 0;accent-color:#98634f}
+.intervencao-manual{display:flex;flex-direction:column;gap:6px;margin-top:12px;color:#806b61;font-size:13px;font-weight:600}
+.intervencao-manual textarea{width:100%;border:1px solid #e5d4c7;border-radius:11px;padding:11px;background:#fff;color:#35231d;font:inherit;font-weight:400;line-height:1.55;resize:vertical}
+@media(max-width:700px){.intervencoes-grupos{grid-template-columns:1fr}.intervencao-opcoes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){.intervencao-opcoes{grid-template-columns:1fr}}
