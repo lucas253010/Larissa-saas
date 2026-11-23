@@ -68,14 +68,14 @@
     msg('config-msg','Configurações salvas. Novas consultas usarão '+brlx(payload.valor)+' como valor padrão. A agenda pública ainda usa config.js.');
   });
   const renderFinance=()=>{
-    const m=$x('fin-mes').value||dateNow().slice(0,7),list=(rows||[]).filter(r=>String(r.data).slice(0,7)===m&&r.status!=='Cancelada');
+    const m=$x('fin-mes').value||dateNow().slice(0,7),list=dados().filter(r=>String(r.data).slice(0,7)===m&&r.status!=='Cancelada');
     const paid=list.filter(r=>r.pago).reduce((a,r)=>a+Number(r.valor||0),0),due=list.filter(r=>!r.pago).reduce((a,r)=>a+Number(r.valor||0),0);
     $x('fin-kpis').innerHTML=[['Recebido',brlx(paid)],['A receber',brlx(due)],['Sessões',list.length]].map(([a,b])=>'<div class="extra-kpi"><span>'+a+'</span><strong>'+b+'</strong></div>').join('');
     $x('fin-lista').innerHTML=list.length?list.sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora)).map(r=>'<div class="row"><span>'+escx(r.data)+' · '+escx(String(r.hora).slice(0,5))+' · '+escx(r.nome)+'</span><strong>'+brlx(r.valor)+' · '+(r.pago?'Pago':'Pendente')+'</strong></div>').join(''):'<p class="mut">Nenhuma sessão neste mês.</p>';
   };
   $x('fin-mes').value=dateNow().slice(0,7);$x('fin-mes').addEventListener('change',renderFinance);
   $x('fin-csv').addEventListener('click',()=>{
-    const m=$x('fin-mes').value, list=(rows||[]).filter(r=>String(r.data).slice(0,7)===m&&r.status!=='Cancelada');
+    const m=$x('fin-mes').value, list=dados().filter(r=>String(r.data).slice(0,7)===m&&r.status!=='Cancelada');
     const lines=[['Data','Hora','Paciente','Modalidade','Status','Pagamento','Valor'],...list.map(r=>[r.data,String(r.hora).slice(0,5),r.nome,r.modalidade,r.status,r.pago?'Pago':'Pendente',Number(r.valor||0).toFixed(2)])];
     const csv='\ufeff'+lines.map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='financeiro-'+m+'.csv';a.click();URL.revokeObjectURL(url);
   });
