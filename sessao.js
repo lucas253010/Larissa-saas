@@ -114,5 +114,32 @@
     const b=e.target.closest('[data-a="sessao"]');
     if(b){e.preventDefault();openSession(b.dataset.id)}
   });
+
+  async function loadPatientNotes(root){
+    const nodes=[...(root||document).querySelectorAll('[data-nota-consulta]')];
+    const ids=nodes.map(n=>n.dataset.notaConsulta).filter(Boolean);
+    if(!ids.length)return;
+    if(demoOn){
+      const map=new Map((dados()||[]).map(r=>[String(r.id),r._anotacao||null]));
+      nodes.forEach(n=>{
+        const a=map.get(String(n.dataset.notaConsulta));
+        n.innerHTML=a?'<b>Anotação da sessão</b><p>'+safeS(a.conteudo||'')+'</p>'+(a.intervencoes?'<p><b>Intervenções:</b> '+safeS(a.intervencoes)+'</p>':'')+(a.plano?'<p><b>Próximos passos:</b> '+safeS(a.plano)+'</p>':''):'<span class="mut">Nenhuma anotação salva nesta consulta.</span>';
+      });
+      return;
+    }
+    const {data,error}=await sb.from('anotacoes_consultas').select('consulta_id,conteudo,humor,temas,intervencoes,tarefas,plano').in('consulta_id',ids);
+    if(error){nodes.forEach(n=>n.innerHTML='<span class="mut">Não foi possível carregar a anotação. Verifique a migração SQL.</span>');return}
+    const map=new Map((data||[]).map(a=>[String(a.consulta_id),a]));
+    nodes.forEach(n=>{
+      const a=map.get(String(n.dataset.notaConsulta));
+      n.innerHTML=a?'<b>Registro clínico</b>'+(a.humor?'<p><b>Humor:</b> '+safeS(a.humor)+'</p>':'')+(a.temas?'<p><b>Temas:</b> '+safeS(a.temas)+'</p>':'')+(a.conteudo?'<p>'+safeS(a.conteudo)+'</p>':'')+(a.intervencoes?'<p><b>Intervenções:</b> '+safeS(a.intervencoes)+'</p>':'')+(a.tarefas?'<p><b>Combinados:</b> '+safeS(a.tarefas)+'</p>':'')+(a.plano?'<p><b>Retomar:</b> '+safeS(a.plano)+'</p>':''):'<span class="mut">Nenhuma anotação salva nesta consulta.</span>';
+    });
+  }
+  document.addEventListener('toggle',e=>{
+    const d=e.target;
+    if(d&&d.matches&&d.matches('details[data-k]')&&d.open)loadPatientNotes(d);
+  },true);
+  window.carregarNotasPaciente=loadPatientNotes;
+
   window.abrirSessaoClinica=openSession;
 })();
