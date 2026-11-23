@@ -249,11 +249,15 @@ summary .mut{font-weight:400;margin:0;font-size:14px}
   </div>
 </section>
 <section class="card" id="p-prontuarios" hidden>
-  <h2>Prontuários e anotações por consulta</h2>
-  <p class="mut">Cada consulta tem seu próprio registro. Edições anteriores ficam no histórico de versões.</p>
+  <h2>Prontuário do paciente</h2>
+  <p class="mut">Informações gerais do paciente e registros individuais de cada sessão, organizados por data.</p>
   <div class="extra-card">
-    <label>Paciente e consulta<select id="nota-consulta"><option value="">Selecione uma consulta</option></select></label>
-    <label>Anotação clínica<textarea id="nota-texto" rows="9" placeholder="Registre a evolução e os pontos relevantes desta sessão..."></textarea></label>
+    <label>Paciente<select id="nota-paciente"><option value="">Selecione um paciente</option></select></label>
+    <label>Informações gerais do paciente<textarea id="nota-paciente-texto" rows="5" placeholder="Informações gerais relevantes, histórico e observações contínuas..."></textarea></label>
+    <div class="extra-actions"><button class="ab pri" id="nota-paciente-salvar" type="button">Salvar informações do paciente</button><span class="mut" id="nota-paciente-msg" role="status"></span></div>
+    <div class="session-notes-heading"><h3>Anotações das sessões</h3><p class="mut">Selecione uma sessão para abrir ou registrar sua anotação.</p></div>
+    <label>Sessão<select id="nota-consulta"><option value="">Selecione uma sessão</option></select></label>
+    <label>Anotação desta sessão<textarea id="nota-texto" rows="9" placeholder="Assuntos abordados, observações, evolução e pontos importantes desta sessão..."></textarea></label>
     <div class="extra-actions"><button class="ab pri" id="nota-salvar" type="button">Salvar anotação</button><span class="mut" id="nota-msg" role="status"></span></div>
     <div id="nota-historico" class="note-history"></div>
   </div>
@@ -467,7 +471,7 @@ function refresca(){desenha();semana(ativosAgora())}
 const semDe=ds=>{const t=new Date();t.setHours(12,0,0,0);t.setDate(t.getDate()-((t.getDay()+6)%7));const d=new Date(ds+'T12:00');d.setDate(d.getDate()-((d.getDay()+6)%7));return Math.round((d-t)/(7*864e5))};
 function atualiza(){desenha();painel()}
 let filtroAg='todas',qAg='',diasAg=14;
-const TABS=[['hoje','Hoje','hoje','nh'],['novas','Novas','inbox','nn'],['prox','Agenda','agenda','np'],['cob','Cobranças','wallet','nc'],['pac','Pacientes','users',''],['blq','Bloqueios','lock','']];
+const TABS=[['hoje','Início','hoje','nh'],['prox','Agenda','agenda','np'],['pac','Pacientes','users',''],['prontuarios','Prontuários','receipt',''],['financeiro','Financeiro','wallet',''],['configuracoes','Ajustes','lock','']];
 function montaTabs(){$('tabs').innerHTML=TABS.map(([k,t,i,c])=>`<button type="button" class="tab" role="tab" data-tab="${k}" aria-selected="${k===aba}">${ic(i)}${t}${c?` <b class="ct" id="${c}">0</b>`:''}</button>`).join('')}
 function desenha(){
   const hoje=ymd(new Date()),at=ativosAgora().slice().sort(cmpS);
