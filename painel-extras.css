@@ -121,3 +121,28 @@
 /* Confirmação visual do salvamento das anotações */
 #sessao-salvar.sessao-salvo-ok{background:#3f7659!important;border-color:#3f7659!important;color:#fff!important}
 #sessao-salvar:disabled{opacity:.75;cursor:wait}
+
+
+/* Sessão clínica: preenchimento rápido e detalhes sob demanda */
+#p-sessao .sessao-fields-rapidos{gap:13px;margin-top:14px}
+#p-sessao .sessao-fields-rapidos>label{gap:7px}
+#p-sessao .sessao-label-icon{display:inline-block;margin-right:5px;color:#98634f;font-size:15px}
+#p-sessao .sessao-fields-rapidos textarea{min-height:76px}
+#p-sessao .sessao-fields-rapidos>label.wide textarea{min-height:112px}
+#p-sessao .sessao-detalhes{grid-column:1/-1;margin:2px 0 0;padding:0;border:1px solid #ead9cc;border-radius:12px;background:#fffdfb;overflow:hidden}
+#p-sessao .sessao-detalhes summary{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;color:#624b3e;list-style:none}
+#p-sessao .sessao-detalhes summary::-webkit-details-marker{display:none}
+#p-sessao .sessao-detalhes summary:after{content:'＋';font-size:18px;color:#98634f}
+#p-sessao .sessao-detalhes[open] summary:after{content:'−'}
+#p-sessao .sessao-detalhes summary small{font-weight:400;color:#8a7165}
+#p-sessao .sessao-detalhes-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:4px 14px 14px}
+#p-sessao .sessao-detalhes-grid label{display:flex;flex-direction:column;gap:6px;color:#806b61;font-size:13px;font-weight:600;min-width:0}
+#p-sessao .sessao-detalhes-grid .wide{grid-column:1/-1}
+#p-sessao .sessao-detalhes-grid input,#p-sessao .sessao-detalhes-grid textarea,#p-sessao .sessao-detalhes-grid select{width:100%;min-width:0;border:1px solid #e5d4c7;border-radius:10px;padding:10px;background:#fff;color:#35231d;font:inherit;font-weight:400;line-height:1.5}
+#p-sessao .sessao-intervencoes{grid-column:1/-1}
+#p-sessao .sessao-evolucao-kpi{transition:transform .2s,box-shadow .2s}
+#p-sessao .sessao-evolucao-kpi:hover{transform:translateY(-2px);box-shadow:0 7px 16px rgba(76,48,35,.08)}
+#p-sessao .sessao-evolucao-kpi span{font-weight:700}
+#p-sessao .sessao-grafico-wrap canvas{cursor:crosshair}
+@media(max-width:700px){#p-sessao .sessao-detalhes-grid{grid-template-columns:1fr}#p-sessao .sessao-detalhes-grid .wide{grid-column:auto}#p-sessao .sessao-detalhes summary{align-items:flex-start;flex-wrap:wrap}#p-sessao .sessao-detalhes summary small{width:100%}}
+@media(prefers-reduced-motion:reduce){#p-sessao .sessao-evolucao-kpi{transition:none}}
