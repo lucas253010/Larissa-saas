@@ -35,3 +35,9 @@
 #app #nota-texto,#app #nota-paciente-texto{min-height:130px}
 @media(max-width:760px){#app .tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}#app .tab{font-size:13px;padding:10px 6px;white-space:normal}}
 @media(max-width:420px){#app .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+#app .quick-links{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:-6px 0 18px;padding:0 2px}
+#app .quick-links button{appearance:none;border:0;background:transparent;color:#8b6a5c;font:600 12px Figtree,system-ui,sans-serif;padding:6px 9px;border-radius:8px;cursor:pointer}
+#app .quick-links button:hover{background:#f1e2d6;color:#8d4935}
+#app .quick-links button:focus-visible{outline:2px solid #a64f38;outline-offset:2px}
+@media(max-width:560px){#app .quick-links{gap:4px}#app .quick-links button{font-size:11px;padding:6px}}
