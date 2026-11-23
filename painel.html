@@ -243,15 +243,13 @@ summary .mut{font-weight:400;margin:0;font-size:14px}
   <form id="form-sessao" class="sessao-form">
     <input type="hidden" name="consulta_id">
     <div class="sessao-toolbar"><div><b>Registro clínico</b><small>As informações são privadas e vinculadas a esta consulta.</small></div><span id="sessao-salvo" class="mut" role="status">Ainda não salvo</span></div>
-    <div class="sessao-fields">
-      <label>Humor / estado emocional observado<select name="humor"><option value="">Não registrado</option><option>Tranquilo</option><option>Ansioso</option><option>Triste</option><option>Irritado</option><option>Desanimado</option><option>Estável</option><option>Variável</option><option>Outro / não especificado</option></select></label>
-      <label>Temas trabalhados<input name="temas" maxlength="500" placeholder="Ex.: relações, trabalho, autoestima..."></label>
-      <label>Percepção clínica de evolução<select name="evolucao_nota"><option value="">Não avaliado</option><option value="1">1 · Momento mais difícil</option><option value="2">2 · Pequenos avanços / desafios</option><option value="3">3 · Estável / em construção</option><option value="4">4 · Avanços percebidos</option><option value="5">5 · Avanços consistentes</option></select></label>
-      <label class="wide">Evolução e anotações da sessão<textarea name="conteudo" rows="7" placeholder="Registre de forma objetiva os pontos relevantes, falas importantes e evolução observada..."></textarea></label>
-      <div class="sessao-intervencoes wide">
-        <label>Intervenções / estratégias utilizadas
+    <div class="sessao-fields sessao-fields-rapidos">
+      <label class="wide"><span class="sessao-label-icon">✎</span>Resumo da sessão<textarea name="conteudo" rows="5" placeholder="Registre os pontos principais, falas relevantes e o que foi trabalhado hoje..."></textarea></label>
+      <label><span class="sessao-label-icon">↗</span>Evolução percebida<select name="evolucao_nota"><option value="">Não avaliado</option><option value="1">1 · Momento mais difícil</option><option value="2">2 · Pequenos avanços / desafios</option><option value="3">3 · Estável / em construção</option><option value="4">4 · Avanços percebidos</option><option value="5">5 · Avanços consistentes</option></select></label>
+      <div class="sessao-intervencoes">
+        <label><span class="sessao-label-icon">✦</span>Intervenções utilizadas
           <select id="intervencoes-selecao" aria-label="Selecionar uma estratégia">
-            <option value="">Selecione uma estratégia (opcional)</option>
+            <option value="">Adicionar estratégia (opcional)</option>
             <optgroup label="Acolhimento e escuta"><option>Escuta ativa</option><option>Acolhimento emocional</option><option>Validação emocional</option><option>Empatia terapêutica</option></optgroup>
             <optgroup label="Técnicas cognitivas"><option>Identificação de pensamentos automáticos</option><option>Questionamento de crenças</option><option>Reestruturação cognitiva</option><option>Psicoeducação</option></optgroup>
             <optgroup label="Técnicas emocionais"><option>Regulação emocional</option><option>Identificação de emoções</option><option>Exercícios de respiração</option><option>Mindfulness</option></optgroup>
@@ -260,11 +258,18 @@ summary .mut{font-weight:400;margin:0;font-size:14px}
           </select>
         </label>
         <div id="intervencoes-selecionadas" class="intervencoes-selecionadas" aria-live="polite"></div>
-        <label class="intervencao-manual">Outra estratégia / observações<textarea name="intervencoes_manual" rows="2" placeholder="Escreva aqui, se precisar..."></textarea></label>
+        <label class="intervencao-manual">Outra estratégia / observações<textarea name="intervencoes_manual" rows="2" placeholder="Complemento opcional..."></textarea></label>
         <textarea name="intervencoes" hidden aria-hidden="true"></textarea>
       </div>
-      <label>Combinados e tarefas até a próxima sessão<textarea name="tarefas" rows="4" placeholder="Atividades, observações ou combinados com o paciente..."></textarea></label>
-      <label class="wide">Pontos para retomar na próxima sessão<textarea name="plano" rows="3" placeholder="Assuntos para acompanhar, objetivos e próximos passos..."></textarea></label>
+      <details class="sessao-detalhes">
+        <summary><span>＋ Detalhes complementares</span><small>Humor, temas e próximos passos (opcional)</small></summary>
+        <div class="sessao-detalhes-grid">
+          <label><span class="sessao-label-icon">♡</span>Humor / estado emocional<select name="humor"><option value="">Não registrado</option><option>Tranquilo</option><option>Ansioso</option><option>Triste</option><option>Irritado</option><option>Desanimado</option><option>Estável</option><option>Variável</option><option>Outro / não especificado</option></select></label>
+          <label><span class="sessao-label-icon">◎</span>Temas trabalhados<input name="temas" maxlength="500" placeholder="Ex.: relações, trabalho, autoestima..."></label>
+          <label class="wide"><span class="sessao-label-icon">✓</span>Combinados e tarefas<textarea name="tarefas" rows="2" placeholder="Atividades ou combinados até a próxima sessão..."></textarea></label>
+          <label class="wide"><span class="sessao-label-icon">→</span>Pontos para retomar<textarea name="plano" rows="2" placeholder="Assuntos para acompanhar na próxima sessão..."></textarea></label>
+        </div>
+      </details>
     </div>
     <div class="sessao-footer"><p class="mut">Revise o registro antes de salvar. Evite incluir informações que não sejam necessárias ao acompanhamento.</p><div><button type="button" class="ab ghost" id="sessao-limpar">Limpar campos</button><button type="submit" class="ab pri" id="sessao-salvar">Salvar registro</button></div></div>
   </form>
